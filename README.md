@@ -1,4 +1,4 @@
-# cx-template-java-project
+# Integrations-Datastore
 Please add a description of a project
 
 ## Release Notes
