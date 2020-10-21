@@ -115,18 +115,7 @@ jobs:
               echo "Quality gate is not OK - exiting with error"
               exit 1
             fi
-  
-  system-tests:
-    parameters:
-      os:
-        type: string
-      node-version:
-        type: string
-    docker:
-      - image: circleci/openjdk:8-jdk
-    steps:
-      - run: echo << parameters.os >> - << parameters.node-version >>
-    
+
   publish:
     docker:
       - image: circleci/openjdk:8-jdk
@@ -159,18 +148,3 @@ workflows:
       - sonar:
           requires:
             - build
-      - system-tests:
-          matrix:
-            parameters:
-              os: [linux, macos]
-              node-version: ["10.9.0", "11.9.0", "12.9.1", "13.9.0"]
-          requires:
-            - test
-            - sonar
-      - publish:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - system-tests
