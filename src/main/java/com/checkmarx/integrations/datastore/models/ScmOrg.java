@@ -7,7 +7,8 @@ import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
-@Entity(name = "scm_orgs")
+@Entity
+@Table(name = "scm_orgs")
 public class ScmOrg {
 
     @Id
