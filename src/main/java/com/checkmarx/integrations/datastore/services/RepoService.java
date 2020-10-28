@@ -2,18 +2,16 @@ package com.checkmarx.integrations.datastore.services;
 
 import com.checkmarx.integrations.datastore.models.ScmRepo;
 import com.checkmarx.integrations.datastore.repositories.ScmRepoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class RepoService {
 
-    @Autowired
-    private ScmRepoRepository scmRepoRepository;
+    private final ScmRepoRepository scmRepoRepository;
 
-    public List<ScmRepo> getRepoBy(Long scmId, String nameSpace, String repo) {
-        return scmRepoRepository.getRepo(repo, nameSpace, scmId);
+    public ScmRepo getRepoBy(String scmName, String nameSpace, String repo) {
+        return scmRepoRepository.getRepo(repo, nameSpace, scmName);
     }
 }

@@ -5,6 +5,7 @@ drop table scms;
 CREATE TABLE scms
 (
 	id				SERIAL PRIMARY KEY,
+	name			varchar(50),
 	base_url		varchar(50),
 	client_id		varchar(50),
 	client_secret	varchar(50)

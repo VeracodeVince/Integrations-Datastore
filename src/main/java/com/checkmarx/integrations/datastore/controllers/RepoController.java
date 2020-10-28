@@ -2,8 +2,8 @@ package com.checkmarx.integrations.datastore.controllers;
 
 import com.checkmarx.integrations.datastore.models.ScmRepo;
 import com.checkmarx.integrations.datastore.services.RepoService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,16 +13,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/repositories")
+@RequiredArgsConstructor
 @Slf4j
 public class RepoController {
 
-    @Autowired
-    private RepoService repoService;
+    private final RepoService repoService;
 
     @GetMapping()
-    public List<ScmRepo> getScmRepo(@RequestParam Long scmId, @RequestParam("name-space") String nameSpace, @RequestParam String repo) {
-        log.trace("getScmRepo: scmId={}, name-space={}, repo={}", scmId, nameSpace, repo);
-        return repoService.getRepoBy(scmId, nameSpace, repo);
+    public ScmRepo getScmRepo(@RequestParam String scmName, @RequestParam("name-space") String nameSpace, @RequestParam String repo) {
+        log.trace("getScmRepo: scmName={}, name-space={}, repo={}", scmName, nameSpace, repo);
+        return repoService.getRepoBy(scmName, nameSpace, repo);
     }
 
 }

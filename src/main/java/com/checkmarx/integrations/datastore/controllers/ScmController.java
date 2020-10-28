@@ -6,7 +6,7 @@ import com.checkmarx.integrations.datastore.models.ScmRepo;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import com.checkmarx.integrations.datastore.repositories.ScmRepoRepository;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,16 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class ScmController {
 
-    @Autowired
-    private ScmRepository scmRepository;
-
-    @Autowired
-    private ScmOrgRepository scmOrgRepository;
-
-    @Autowired
-    private ScmRepoRepository scmRepoRepository;
+    private final ScmRepository scmRepository;
+    private final ScmOrgRepository scmOrgRepository;
+    private final ScmRepoRepository scmRepoRepository;
 
     @GetMapping("/scms")
     public List<Scm> scmList() {

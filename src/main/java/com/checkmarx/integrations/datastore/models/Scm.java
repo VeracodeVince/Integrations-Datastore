@@ -20,6 +20,8 @@ public class Scm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     @Column(name = "base_url")
     private String baseUrl;
 
