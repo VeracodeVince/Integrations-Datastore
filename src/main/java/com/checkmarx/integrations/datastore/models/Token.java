@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "token")
+@Table(name = "tokens")
 public class Token {
 
     @Id

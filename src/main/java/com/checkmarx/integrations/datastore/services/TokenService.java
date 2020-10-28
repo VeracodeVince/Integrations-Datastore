@@ -16,4 +16,8 @@ public class TokenService {
     public List<Token> getTokens() {
         return scmTokenRepository.findAll();
     }
+
+	public Token addToken(Token token) {
+		return scmTokenRepository.saveAndFlush(token);
+	}
 }

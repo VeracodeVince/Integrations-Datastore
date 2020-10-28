@@ -1,5 +1,6 @@
 drop table scm_repos;
 drop table scm_orgs;
+drop table tokens;
 drop table scms;
 
 CREATE TABLE scms
@@ -38,3 +39,15 @@ CREATE TABLE scm_repos
 		FOREIGN KEY (org_id)
 			REFERENCES scm_orgs(id)
 );
+
+CREATE TABLE tokens
+(
+	id						SERIAL PRIMARY KEY,
+	org_id					int,
+	type					VARCHAR(20),
+	token					VARCHAR(100),
+
+	CONSTRAINT fk_tokens
+		FOREIGN KEY (org_id)
+			REFERENCES scm_orgs(id)
+)
