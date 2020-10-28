@@ -1,5 +1,7 @@
 package com.checkmarx.integrations.datastore.services;
 
+import java.util.List;
+
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,4 +16,16 @@ public class ScmService {
     public Scm createScm(Scm scm) {
         return scmRepository.saveAndFlush(scm);
     }
+
+	public void deleteScm(Scm scm) {
+		scmRepository.delete(scm);
+	}
+
+	public Scm getScm(Long id) {
+		return scmRepository.getOne(id);
+	}
+
+	public List<Scm> getAllScms() {
+		return scmRepository.findAll();
+	}
 }
