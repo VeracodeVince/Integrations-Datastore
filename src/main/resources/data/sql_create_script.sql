@@ -9,7 +9,7 @@ CREATE TABLE scms
 	base_url		varchar(50),
 	client_id		varchar(50),
 	client_secret	varchar(50)
-
+	unique (name, base_url, client_id)
 );
 
 CREATE TABLE scm_orgs
@@ -18,7 +18,7 @@ CREATE TABLE scm_orgs
 	scm_id			int,
 	name			varchar(50),
 	cx_flow_url 	varchar(50),
-  cx_flow_config 	varchar(1000),
+	cx_flow_config 	varchar(1000),
 	cx_go_token 	varchar(50),
 	team			varchar(50),
 
