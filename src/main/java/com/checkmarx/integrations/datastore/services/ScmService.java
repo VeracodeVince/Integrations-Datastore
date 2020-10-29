@@ -21,10 +21,6 @@ public class ScmService {
 		scmRepository.delete(scm);
 	}
 
-	public Scm getScm(Long id) {
-		return scmRepository.getOne(id);
-	}
-
 	public List<Scm> getAllScms() {
 		return scmRepository.findAll();
 	}

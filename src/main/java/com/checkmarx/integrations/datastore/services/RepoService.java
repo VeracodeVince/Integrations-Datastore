@@ -11,7 +11,7 @@ public class RepoService {
 
     private final ScmRepoRepository scmRepoRepository;
 
-    public ScmRepo getRepoBy(String scmName, String nameSpace, String repo) {
-        return scmRepoRepository.getRepo(repo, nameSpace, scmName);
+    public ScmRepo getRepoBy(String scmName, String orgName, String repo) {
+        return scmRepoRepository.getRepo(repo, orgName, scmName);
     }
 }

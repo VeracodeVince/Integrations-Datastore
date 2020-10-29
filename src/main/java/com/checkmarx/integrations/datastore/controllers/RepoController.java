@@ -20,9 +20,9 @@ public class RepoController {
     private final RepoService repoService;
 
     @GetMapping()
-    public ScmRepo getScmRepo(@RequestParam String scmName, @RequestParam("name-space") String nameSpace, @RequestParam String repo) {
-        log.trace("getScmRepo: scmName={}, name-space={}, repo={}", scmName, nameSpace, repo);
-        return repoService.getRepoBy(scmName, nameSpace, repo);
+    public ScmRepo getScmRepo(@RequestParam String scmName, @RequestParam String orgName, @RequestParam String repo) {
+        log.trace("getScmRepo: scmName={}, orgName={}, repo={}", scmName, orgName, repo);
+        return repoService.getRepoBy(scmName, orgName, repo);
     }
 
 }
