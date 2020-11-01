@@ -28,11 +28,11 @@ public class ScmController {
         return scmService.createScm(scm);
     }
 
-    @DeleteMapping
+    @DeleteMapping(value = "{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void deleteScm(@RequestBody final Scm scm) {
-        log.trace("deleteScm: scm={}", scm);
-        scmService.deleteScm(scm);
+    public void deleteScm(@PathVariable Long id) {
+        log.trace("deleteScm: id={}", id);
+        scmService.deleteScm(id);
     }
 
 }

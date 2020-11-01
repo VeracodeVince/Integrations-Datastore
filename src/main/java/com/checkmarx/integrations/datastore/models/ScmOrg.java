@@ -3,6 +3,8 @@ package com.checkmarx.integrations.datastore.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class ScmOrg {
 
     @ManyToOne
     @JoinColumn(name = "scm_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Scm scm;
 
     @OneToMany(mappedBy = "scmOrg", cascade = CascadeType.REMOVE)

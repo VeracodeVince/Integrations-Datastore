@@ -17,8 +17,8 @@ public class ScmService {
         return scmRepository.saveAndFlush(scm);
     }
 
-	public void deleteScm(Scm scm) {
-		scmRepository.delete(scm);
+	public void deleteScm(Long id) {
+		scmRepository.deleteById(id);
 	}
 
 	public List<Scm> getAllScms() {
