@@ -27,6 +27,7 @@ public class TokenController {
 
     @PostMapping
     public Token addToken(@RequestBody Token token) {
+        log.trace("addToken: token={}", token);
         return tokenService.addToken(token);
     }
 }

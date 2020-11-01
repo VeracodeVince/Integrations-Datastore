@@ -27,6 +27,7 @@ public class ScmOrgController {
 
     @PostMapping
     public ScmOrg createScmOrg(@RequestBody final ScmOrg scmOrg) {
+        log.trace("createScmOrg: scmOrg={}", scmOrg);
         return orgService.createScmOrg(scmOrg);
     }
 }
