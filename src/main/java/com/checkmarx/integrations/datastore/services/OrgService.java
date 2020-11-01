@@ -14,4 +14,8 @@ public class OrgService {
     public ScmOrg getOrgBy(String scmName, String orgName) {
         return scmOrgRepository.getScmOrg(orgName, scmName);
     }
+
+    public ScmOrg createScmOrg(ScmOrg scmOrg) {
+        return scmOrgRepository.saveAndFlush(scmOrg);
+    }
 }

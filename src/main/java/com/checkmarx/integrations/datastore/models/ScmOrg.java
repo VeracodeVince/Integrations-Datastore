@@ -11,7 +11,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "scm_orgs")
+@Table(name = "scm_orgs", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"scm_id", "name"})})
 public class ScmOrg {
 
     @Id
