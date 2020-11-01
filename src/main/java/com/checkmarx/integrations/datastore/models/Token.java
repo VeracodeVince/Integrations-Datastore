@@ -8,7 +8,8 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "tokens")
+@Table(name = "tokens", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"org_id", "type", "token"})})
 public class Token {
 
     @Id

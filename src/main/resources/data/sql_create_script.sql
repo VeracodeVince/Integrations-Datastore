@@ -1,6 +1,6 @@
+drop table tokens;
 drop table scm_repos;
 drop table scm_orgs;
-drop table tokens;
 drop table scms;
 
 CREATE TABLE scms
@@ -9,8 +9,8 @@ CREATE TABLE scms
 	name			varchar(50),
 	base_url		varchar(50),
 	client_id		varchar(50),
-	client_secret	varchar(50)
-	unique (name, base_url, client_id)
+	client_secret	varchar(50),
+	unique (name, base_url, client_id, client_secret)
 );
 
 CREATE TABLE scm_orgs
@@ -19,8 +19,8 @@ CREATE TABLE scm_orgs
 	scm_id			int,
 	name			varchar(50),
 	cx_flow_url 	varchar(50),
-	cx_flow_config 	varchar(1000),
-	cx_go_token 	varchar(50),
+  cx_flow_config 	varchar(1000),
+	cx_go_token 	varchar(100),
 	team			varchar(50),
 
 	CONSTRAINT fk_scm_orgs
@@ -40,14 +40,14 @@ CREATE TABLE scm_repos
 			REFERENCES scm_orgs(id)
 );
 
-CREATE TABLE tokens
-(
-	id						SERIAL PRIMARY KEY,
-	org_id					int,
-	type					VARCHAR(20),
-	token					VARCHAR(100),
+CREATE TABLE tokens (
+	id				SERIAL PRIMARY KEY,
+	org_id			int,
+	type			varchar(20),
+	token			varchar(100),
+	unique (org_id, type, token),
 
 	CONSTRAINT fk_tokens
 		FOREIGN KEY (org_id)
 			REFERENCES scm_orgs(id)
-)
+);
