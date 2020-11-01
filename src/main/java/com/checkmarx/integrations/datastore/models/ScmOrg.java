@@ -1,9 +1,12 @@
 package com.checkmarx.integrations.datastore.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,9 +18,13 @@ public class ScmOrg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "scm_id")
     private Scm scm;
+
+    @OneToMany(mappedBy = "scmOrg")
+    @JsonIgnore
+    private List<ScmRepo> scmRepoList = new ArrayList<>();
 
     private String name;
 
