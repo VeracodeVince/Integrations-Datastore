@@ -12,7 +12,8 @@ public class ApplicationSwaggerConfig {
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Integration Datastore API")
-                        .version("v0.0.1"));
+                        .version("v0.0.1")
+                        .description("Integration Datastore End-Points"));
     }
 
 }
