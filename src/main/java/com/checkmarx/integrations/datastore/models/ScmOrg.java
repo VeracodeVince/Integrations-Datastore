@@ -23,9 +23,13 @@ public class ScmOrg {
     @JoinColumn(name = "scm_id")
     private Scm scm;
 
-    @OneToMany(mappedBy = "scmOrg")
+    @OneToMany(mappedBy = "scmOrg", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<ScmRepo> scmRepoList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "scmOrg", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Token> tokenList = new ArrayList<>();
 
     private String name;
 

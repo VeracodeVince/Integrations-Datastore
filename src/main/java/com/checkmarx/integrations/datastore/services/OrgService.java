@@ -18,4 +18,8 @@ public class OrgService {
     public ScmOrg createScmOrg(ScmOrg scmOrg) {
         return scmOrgRepository.saveAndFlush(scmOrg);
     }
+
+    public void deleteScmOrgById(Long id) {
+        scmOrgRepository.deleteById(id);
+    }
 }
