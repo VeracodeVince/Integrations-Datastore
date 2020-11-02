@@ -13,8 +13,8 @@ public class TokenService {
 
     private final ScmTokenRepository scmTokenRepository;
 
-    public List<Token> getTokens() {
-        return scmTokenRepository.findAll();
+    public Token getTokens(String orgName, String type) {
+        return scmTokenRepository.getToken(orgName, type);
     }
 
 	public Token addToken(Token token) {

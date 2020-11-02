@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tokens")
@@ -21,8 +20,9 @@ public class TokenController {
     private final TokenService tokenService;
 
     @GetMapping
-    public List<Token> getToken() {
-        return tokenService.getTokens();
+    public Token getToken(@RequestParam String orgName, @RequestParam String type) {
+        log.trace("getToken: orgName={}, type={}", orgName, type);
+        return tokenService.getTokens(orgName, type);
     }
 
     @PostMapping
