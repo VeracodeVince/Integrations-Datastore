@@ -20,8 +20,8 @@ CREATE TABLE scm_orgs
 	name			varchar(50),
 	cx_flow_url 	varchar(50),
   cx_flow_config 	varchar(1000),
-	cx_go_token 	varchar(100),
 	team			varchar(50),
+	unique (scm_id, name),
 
 	CONSTRAINT fk_scm_orgs
 		FOREIGN KEY (scm_id)

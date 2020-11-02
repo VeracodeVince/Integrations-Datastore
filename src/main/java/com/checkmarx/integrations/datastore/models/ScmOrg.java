@@ -42,8 +42,5 @@ public class ScmOrg {
     @Column(name = "cx_flow_config")
     private String cxFlowConfig;
 
-    @Column(name = "cx_go_token")
-    private String cxGoToken;
-
     private String team;
 }
