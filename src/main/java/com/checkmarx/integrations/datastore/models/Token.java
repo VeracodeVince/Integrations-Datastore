@@ -10,8 +10,8 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "tokens", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"org_id", "type", "token"})})
+@Table(name = "scm_tokens", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"org_id", "type"})})
 public class Token {
 
     @Id
