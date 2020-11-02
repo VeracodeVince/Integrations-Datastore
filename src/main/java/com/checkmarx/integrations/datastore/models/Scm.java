@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "scms", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "base_url", "client_id", "client_secret"})})
+        @UniqueConstraint(columnNames = {"name", "client_id", "client_secret"})})
 public class Scm {
 
     @Id

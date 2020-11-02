@@ -10,7 +10,7 @@ CREATE TABLE scms
 	base_url		varchar(50),
 	client_id		varchar(50),
 	client_secret	varchar(50),
-	unique (name, base_url, client_id, client_secret)
+	unique (name, client_id, client_secret)
 );
 
 CREATE TABLE scm_orgs
