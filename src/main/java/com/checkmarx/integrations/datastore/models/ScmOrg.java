@@ -21,7 +21,7 @@ public class ScmOrg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "scm_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Scm scm;
