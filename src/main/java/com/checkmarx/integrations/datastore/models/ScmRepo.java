@@ -2,8 +2,6 @@ package com.checkmarx.integrations.datastore.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -19,7 +17,6 @@ public class ScmRepo {
 
     @ManyToOne
     @JoinColumn(name = "org_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private ScmOrg scmOrg;
 
     private String name;

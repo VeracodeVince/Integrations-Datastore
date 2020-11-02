@@ -19,7 +19,7 @@ public class Scm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "scm", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "scm", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ScmOrg> scmOrgList = new ArrayList<>();
 
