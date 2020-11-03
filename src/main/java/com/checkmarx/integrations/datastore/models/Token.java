@@ -1,12 +1,18 @@
 package com.checkmarx.integrations.datastore.models;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "scm_tokens", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"org_id", "type"})})
