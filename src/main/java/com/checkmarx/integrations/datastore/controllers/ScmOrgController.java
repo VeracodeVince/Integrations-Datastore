@@ -16,11 +16,11 @@ public class ScmOrgController {
 
     private final OrgService orgService;
 
-    @Operation(summary = "Gets a SCM org by SCM name & org name")
+    @Operation(summary = "Gets a SCM org by SCM base URL & org name")
     @GetMapping()
-    public ScmOrg getScmOrg(@RequestParam String scmName, @RequestParam String orgName) {
-        log.trace("getScmOrg: scmName={}, orgName={}", scmName, orgName);
-        return orgService.getOrgBy(scmName, orgName);
+    public ScmOrg getScmOrg(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
+        log.trace("getScmOrg: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
+        return orgService.getOrgBy(scmBaseUrl, orgName);
     }
 
     @Operation(summary = "Creates a SCM org")

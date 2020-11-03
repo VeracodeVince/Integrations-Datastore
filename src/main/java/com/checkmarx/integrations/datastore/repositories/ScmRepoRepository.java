@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ScmRepoRepository extends JpaRepository<ScmRepo, Long> {
 
-    @Query(value = "SELECT r FROM ScmRepo r WHERE r.name = ?1 AND r.scmOrg.name = ?2 AND r.scmOrg.scm.name = ?3")
-    ScmRepo getRepo(String repo, String orgName, String scmName);
+    @Query(value = "SELECT r FROM ScmRepo r WHERE r.name = ?1 AND r.scmOrg.name = ?2 AND r.scmOrg.scm.baseUrl = ?3")
+    ScmRepo getRepo(String repo, String orgName, String scmBaseUrl);
 }

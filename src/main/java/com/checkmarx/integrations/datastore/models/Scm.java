@@ -29,8 +29,6 @@ public class Scm {
     @JsonIgnore
     private List<ScmOrg> scmOrgList = new ArrayList<>();
 
-    private String name;
-
     @Column(name = "base_url")
     private String baseUrl;
 

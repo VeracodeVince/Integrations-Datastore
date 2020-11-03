@@ -12,8 +12,8 @@ public class OrgService {
 
     private final ScmOrgRepository scmOrgRepository;
 
-    public ScmOrg getOrgBy(String scmName, String orgName) {
-        return scmOrgRepository.getScmOrg(orgName, scmName);
+    public ScmOrg getOrgBy(String scmBaseUrl, String orgName) {
+        return scmOrgRepository.getScmOrg(orgName, scmBaseUrl);
     }
 
     public ScmOrg createScmOrg(ScmOrg scmOrg) {
@@ -24,14 +24,14 @@ public class OrgService {
         scmOrgRepository.deleteById(id);
     }
 
-    public ScmOrg createOrGetScmOrgByName(Scm scm, String orgNam) {
-        ScmOrg orgByName = getOrgBy(scm.getName(), orgNam);
+    public ScmOrg createOrGetScmOrgByName(Scm scm, String orgName) {
+        ScmOrg orgByName = getOrgBy(scm.getBaseUrl(), orgName);
 
         if (orgByName != null) {
             return orgByName;
         } else {
             ScmOrg scmOrg = ScmOrg.builder()
-                    .name(orgNam)
+                    .name(orgName)
                     .scm(scm)
                     .build();
             return createScmOrg(scmOrg);
