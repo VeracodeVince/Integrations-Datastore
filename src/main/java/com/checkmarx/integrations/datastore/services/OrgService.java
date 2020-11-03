@@ -1,5 +1,6 @@
 package com.checkmarx.integrations.datastore.services;
 
+import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,19 @@ public class OrgService {
 
     public void deleteScmOrgById(Long id) {
         scmOrgRepository.deleteById(id);
+    }
+
+    public ScmOrg createOrGetScmOrgByName(Scm scm, String orgNam) {
+        ScmOrg orgByName = getOrgBy(scm.getName(), orgNam);
+
+        if (orgByName != null) {
+            return orgByName;
+        } else {
+            ScmOrg scmOrg = ScmOrg.builder()
+                    .name(orgNam)
+                    .scm(scm)
+                    .build();
+            return createScmOrg(scmOrg);
+        }
     }
 }
