@@ -1,11 +1,15 @@
 package com.checkmarx.integrations.datastore.controllers;
 
+import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +21,7 @@ import java.util.List;
 public class ScmController {
 
     private final ScmService scmService;
+    private final ModelMapper modelMapper;
 
     @Operation(summary = "Gets details of all SCMs")
     @GetMapping
@@ -24,12 +29,25 @@ public class ScmController {
         return scmService.getAllScms();
     }
 
-    @Operation(summary = "Creates a new SCM")
-    @PostMapping
-    public Scm createScm(@RequestBody final Scm scm) {
-        log.trace("createScm: scm={}", scm);
-        return scmService.createScm(scm);
+    @Operation(summary = "Gets a SCM by baseUrl")
+    @GetMapping(value = "{baseUrl}")
+    public SCMDto getScmByBaseUrl(@PathVariable String baseUrl) {
+        log.trace("getScmByBaseUrl: baseUrl:{}", baseUrl);
+        Scm scmByBaseUrl = scmService.getScmByBaseUrl(baseUrl);
+        return modelMapper.map(scmByBaseUrl, SCMDto.class);
     }
+
+    @Operation(summary = "Stores a new SCM")
+    @PostMapping(value = "/storeScm")
+    public ResponseEntity createScm(@RequestBody SCMDto scmDto) {
+        log.trace("createScm: scmDto={}", scmDto);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        Scm scm = modelMapper.map(scmDto, Scm.class);
+        scmService.createOrUpdateScm(scm);
+
+        return ResponseEntity.ok().build();
+    }
+
 
     @Operation(summary = "Deletes a SCM by id")
     @DeleteMapping(value = "{id}")

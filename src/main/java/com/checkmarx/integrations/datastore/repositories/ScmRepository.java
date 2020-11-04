@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ScmRepository extends JpaRepository<Scm, Long> {
 
-    @Query(value = "SELECT s from Scm s WHERE s.baseUrl = ?1")
+    @Query(value = "SELECT s FROM Scm s WHERE s.baseUrl = ?1")
     Scm getScmByBaseUrl(String baseUrl);
 }

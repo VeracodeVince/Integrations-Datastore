@@ -13,16 +13,16 @@ public class ScmService {
 
     private final ScmRepository scmRepository;
 
-    public Scm createScm(Scm scm) {
-        return scmRepository.saveAndFlush(scm);
-    }
-
 	public void deleteScm(Long id) {
 		scmRepository.deleteById(id);
 	}
 
 	public List<Scm> getAllScms() {
 		return scmRepository.findAll();
+	}
+
+	public Scm getScmByBaseUrl(String baseUrl) {
+		return scmRepository.getScmByBaseUrl(baseUrl);
 	}
 
 	public Scm createOrGetScmByBaseUrl(String baseUrl) {
@@ -38,7 +38,14 @@ public class ScmService {
 		}
 	}
 
-	private Scm getScmByBaseUrl(String baseUrl) {
-		return scmRepository.getScmByBaseUrl(baseUrl);
+	public void createOrUpdateScm(Scm scm) {
+		Scm scmToUpdate = createOrGetScmByBaseUrl(scm.getBaseUrl());
+		scmToUpdate.setClientId(scm.getClientId());
+		scmToUpdate.setClientSecret(scm.getClientSecret());
+		scmRepository.save(scmToUpdate);
+	}
+
+	private Scm createScm(Scm scm) {
+		return scmRepository.saveAndFlush(scm);
 	}
 }
