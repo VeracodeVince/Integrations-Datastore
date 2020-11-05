@@ -29,5 +29,5 @@ public class Token {
     private String type;
 
     @Column(name = "token")
-    private String rawToken;
+    private String accessToken;
 }

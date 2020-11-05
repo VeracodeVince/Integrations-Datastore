@@ -18,7 +18,7 @@ public class RepoController {
 
     private final RepoService repoService;
 
-    @Operation(summary = "Gets a SCM repo by SCM base URL, org name & repo name")
+    @Operation(summary = "Gets a SCM repo")
     @GetMapping
     public ScmRepo getScmRepo(@RequestParam String scmBaseUrl, @RequestParam String orgName, @RequestParam String repo) {
         log.trace("getScmRepo: scmBaseUrl={}, orgName={}, repo={}", scmBaseUrl, orgName, repo);

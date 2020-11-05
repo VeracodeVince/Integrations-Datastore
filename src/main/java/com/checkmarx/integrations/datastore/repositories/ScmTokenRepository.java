@@ -8,4 +8,7 @@ public interface ScmTokenRepository extends JpaRepository<Token, Long> {
 
     @Query(value = "SELECT t FROM Token t WHERE t.scmOrg.name = ?1 AND t.type = ?2")
     Token getToken(String orgName, String type);
+
+    @Query(value = "SELECT t FROM Token t WHERE t.scmOrg.name = ?1")
+    Token getTokenByOrgName(String orgName);
 }

@@ -16,7 +16,7 @@ public class ScmOrgController {
 
     private final OrgService orgService;
 
-    @Operation(summary = "Gets a SCM org by SCM base URL & org name")
+    @Operation(summary = "Gets a SCM org")
     @GetMapping()
     public ScmOrg getScmOrg(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
         log.trace("getScmOrg: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
@@ -30,7 +30,7 @@ public class ScmOrgController {
         return orgService.createScmOrg(scmOrg);
     }
 
-    @Operation(summary = "Deletes a SCM org by id")
+    @Operation(summary = "Deletes a SCM org")
     @DeleteMapping(value = "{id}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public void deleteScmOrg(@PathVariable Long id) {

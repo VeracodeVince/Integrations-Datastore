@@ -29,7 +29,7 @@ public class ScmController {
         return scmService.getAllScms();
     }
 
-    @Operation(summary = "Gets a SCM by baseUrl")
+    @Operation(summary = "Gets a SCM")
     @GetMapping(value = "{baseUrl}")
     public SCMDto getScmByBaseUrl(@PathVariable String baseUrl) {
         log.trace("getScmByBaseUrl: baseUrl:{}", baseUrl);
