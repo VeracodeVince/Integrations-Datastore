@@ -12,6 +12,8 @@ import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.utils.ErrorMessagesHelper;
 import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,8 @@ public class RepoController {
 
     @Operation(summary = "Gets SCM repo by name")
     @GetMapping(value = "{repoName}")
+    @ApiResponse(responseCode = "200", description = "Repo found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Repo not found", content = @Content)
     public ResponseEntity<RepoDto> getScmRepo(@RequestParam String scmBaseUrl, @RequestParam String orgName, @PathVariable String repoName) {
         log.trace("getScmRepo: scmBaseUrl={}, orgName={}, repoName={}", scmBaseUrl, orgName, repoName);
         ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmBaseUrl, orgName, repoName))
