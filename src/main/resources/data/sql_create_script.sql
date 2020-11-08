@@ -35,6 +35,7 @@ CREATE TABLE scm_repos
 	org_id					int,
 	name					varchar(50),
 	is_webhook_configured	BOOLEAN,
+	unique (org_id, name),
 
 	CONSTRAINT fk_scm_repos
 		FOREIGN KEY (org_id)

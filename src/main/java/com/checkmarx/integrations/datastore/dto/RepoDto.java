@@ -4,30 +4,22 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "scm_url",
-        "org_name",
-        "accessToken",
-        "tokenType"
+        "name",
+        "is_webhook_configured"
 })
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SCMAccessTokenDto {
+public class RepoDto {
 
-    @JsonProperty("scm_url")
-    private String scmUrl;
-    @JsonProperty("org_name")
-    private String orgName;
-    @JsonProperty("accessToken")
-    private String accessToken;
-    @JsonProperty("tokenType")
-    private String tokenType;
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("is_webhook_configured")
+    private boolean isWebhookConfigured;
 }

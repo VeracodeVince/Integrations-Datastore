@@ -20,6 +20,7 @@ public class ScmOrgController {
     @GetMapping()
     public ScmOrg getScmOrg(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
         log.trace("getScmOrg: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
+
         return orgService.getOrgBy(scmBaseUrl, orgName);
     }
 
@@ -27,6 +28,7 @@ public class ScmOrgController {
     @PostMapping
     public ScmOrg createScmOrg(@RequestBody final ScmOrg scmOrg) {
         log.trace("createScmOrg: scmOrg={}", scmOrg);
+
         return orgService.createScmOrg(scmOrg);
     }
 

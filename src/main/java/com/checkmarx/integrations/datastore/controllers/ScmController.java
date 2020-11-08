@@ -3,6 +3,7 @@ package com.checkmarx.integrations.datastore.controllers;
 import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.services.ScmService;
+import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,8 @@ public class ScmController {
     public SCMDto getScmByBaseUrl(@PathVariable String baseUrl) {
         log.trace("getScmByBaseUrl: baseUrl:{}", baseUrl);
         Scm scmByBaseUrl = scmService.getScmByBaseUrl(baseUrl);
-        return modelMapper.map(scmByBaseUrl, SCMDto.class);
+
+        return ObjectMapperUtil.map(scmByBaseUrl, SCMDto.class);
     }
 
     @Operation(summary = "Stores a new SCM")

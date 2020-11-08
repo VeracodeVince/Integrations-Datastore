@@ -14,7 +14,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "scm_repos")
+@Table(name = "scm_repos", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"org_id", "name"})})
 public class ScmRepo {
 
     @Id

@@ -10,6 +10,8 @@ import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.services.TokenService;
 import com.checkmarx.integrations.datastore.utils.ErrorMessagesHelper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -36,6 +38,8 @@ public class ScmTokenController {
 
     @Operation(summary = "Gets SCN access token")
     @GetMapping
+    @ApiResponse(responseCode = "200", description = "Access token found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Access token not found", content = @Content)
     public SCMAccessTokenDto getScmAccessToken(@RequestParam String scmUrl, @RequestParam String orgName) {
         log.trace("getScmAccessToken: scmUrl={} orgName={}", scmUrl, orgName);
         Token token = Optional.ofNullable(orgService.getOrgBy(scmUrl, orgName))
@@ -44,6 +48,7 @@ public class ScmTokenController {
                         new TokenNotFoundException(String.format(ErrorMessagesHelper.ACCESS_TOKEN_NOT_FOUND, scmUrl, orgName)));
 
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
+
         return modelMapper.map(token, SCMAccessTokenDto.class);
     }
 
