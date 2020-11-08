@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 @Slf4j
-public class ControllerAdvisor extends ResponseEntityExceptionHandler {
+public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException e) {
