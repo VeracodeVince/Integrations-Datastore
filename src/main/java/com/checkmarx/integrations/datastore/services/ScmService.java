@@ -1,13 +1,11 @@
 package com.checkmarx.integrations.datastore.services;
 
-import com.checkmarx.integrations.datastore.dto.SCMRepoDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -31,19 +29,6 @@ public class ScmService {
 		return scmRepository.getScmByBaseUrl(baseUrl);
 	}
 
-	public Scm createOrGetScmByBaseUrl(String baseUrl) {
-		Scm scmByBaseUrl = getScmByBaseUrl(baseUrl);
-
-		if (scmByBaseUrl != null) {
-			return scmByBaseUrl;
-		} else {
-			Scm scm = Scm.builder()
-					.baseUrl(baseUrl)
-					.build();
-			return createScm(scm);
-		}
-	}
-
 	public void createOrUpdateScm(Scm scm) {
 		Scm scmToUpdate = createOrGetScmByBaseUrl(scm.getBaseUrl());
 		scmToUpdate.setClientId(scm.getClientId());
@@ -57,6 +42,19 @@ public class ScmService {
 		ScmOrg scmOrgByName = orgService.createOrGetScmOrgByName(scmByBaseUrl, orgName);
 		log.trace("createOrGetScmOrgByName: scmOrgByName:{}", scmOrgByName);
 		return scmOrgByName;
+	}
+
+	private Scm createOrGetScmByBaseUrl(String baseUrl) {
+		Scm scmByBaseUrl = getScmByBaseUrl(baseUrl);
+
+		if (scmByBaseUrl != null) {
+			return scmByBaseUrl;
+		} else {
+			Scm scm = Scm.builder()
+					.baseUrl(baseUrl)
+					.build();
+			return createScm(scm);
+		}
 	}
 
 	private Scm createScm(Scm scm) {
