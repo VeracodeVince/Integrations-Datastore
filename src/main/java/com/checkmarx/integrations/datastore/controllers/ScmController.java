@@ -41,8 +41,8 @@ public class ScmController {
 
     @Operation(summary = "Stores a new SCM")
     @PostMapping(value = "/storeScm")
-    public ResponseEntity createScm(@RequestBody SCMDto scmDto) {
-        log.trace("createScm: scmDto={}", scmDto);
+    public ResponseEntity storeScm(@RequestBody SCMDto scmDto) {
+        log.trace("storeScm: scmDto={}", scmDto);
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         Scm scm = modelMapper.map(scmDto, Scm.class);
         scmService.createOrUpdateScm(scm);
