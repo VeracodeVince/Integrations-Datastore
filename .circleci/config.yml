@@ -116,27 +116,89 @@ jobs:
               exit 1
             fi
 
-  publish:
+  build-image:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: docker:19.03.13
     working_directory: ~/repo
-    environment:
-      MAVEN_OPTS: -Xmx3200m
     steps:
       - attach_workspace:
           at: .
-      - restore_cache:
-          key: maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
+      - setup_remote_docker:
+          version: 19.03.13
+          #docker_layer_caching: true
       - run:
-          name: Import GnuPG Keys
-          command: echo ${GPG_KEY} | base64 --decode | gpg --import --no-tty --batch --yes || true
+          name: Build Datastore Docker Image
+          command: docker build -t datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 .
       - run:
-          name: Publish to Maven Central
-          command: mvn deploy -s .circleci/.circleci.settings.xml -P release -DskipTests -Dmvn-gpg.passphrase=${GPG_PASSPHRASE} -Dossrh.username=${OSSRH_USERNAME} -Dossrh.password=${OSSRH_PASSWORD}
-      - save_cache:
+          name: Save Datastore Docker Image to File
+          command: docker save -o datastore-image.tar datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
+      - persist_to_workspace:
+          root: .
           paths:
-            - ~/.m2
-          key: maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
+            - ./datastore-image.tar
+      
+  deploy:
+    docker:
+      - image: docker:19.03.13
+    working_directory: ~/repo
+    steps:
+      - setup_remote_docker:
+          version: 19.03.13
+          #docker_layer_caching: true
+      - attach_workspace:
+          at: .
+      - run:
+          name: Load Datastore Docker Image from File
+          command: docker load -i datastore-image.tar
+      - run:
+          name: Deploy Postgres DB Docker Container
+          command: |
+            docker run -d --name pg-db -e POSTGRES_USER=${PG_DB_USER} -e POSTGRES_PASSWORD=${PG_DB_PASSWORD} -p 5432:5432 postgres:13.0
+      - run:
+          name: Deploy Datastore Docker Container
+          command: docker run -d --name datastore --network container:pg-db -e spring.datasource.url=jdbc:postgresql://localhost:5432/${PG_DB_USER} -e spring.datasource.username=${PG_DB_USER} -e spring.datasource.password=${PG_DB_PASSWORD} datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
+      - run:
+          name: Wait for Datastore Application to be Up and Running
+          # in curl command -4 flag stands for forcing curl to use IPv4 (--retry-connrefused won't work otherwise)
+          command: docker exec datastore curl -4 --retry 15 --retry-delay 2 --retry-connrefused http://localhost:8080/actuator/health
+      - run:
+          name: print Datastore Docker Container logs
+          command: |
+            docker ps -a
+            docker logs datastore
+          when: always
+  
+  system-tests:
+    parameters:
+      os:
+        type: string
+      node-version:
+        type: string
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - run: echo << parameters.os >> - << parameters.node-version >>
+
+  publish-to-DockerHub:
+    docker:
+      - image: docker:19.03.13
+    working_directory: ~/repo
+    steps:
+      - setup_remote_docker:
+          version: 19.03.13
+          #docker_layer_caching: true
+      - attach_workspace:
+          at: .
+      - run:
+          name: Load Datastore Docker Image from File
+          command: |
+            docker load -i datastore-image.tar
+            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 checkmarx/integrations-datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
+      - run:
+          name: Publish Docker images to Docker Hub
+          command: |
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD} docker.io
+            docker push checkmarx/integrations-datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
 
 workflows:
   ci-cd:
@@ -148,3 +210,24 @@ workflows:
       - sonar:
           requires:
             - build
+      - build-image:
+          requires:
+            - test
+            - sonar
+      - deploy:
+          requires:
+            - build-image
+      - system-tests:
+          matrix:
+            parameters:
+              os: [linux, macos]
+              node-version: ["10.9.0", "11.9.0",]
+          requires:
+            - deploy
+      - publish-to-DockerHub:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - system-tests
