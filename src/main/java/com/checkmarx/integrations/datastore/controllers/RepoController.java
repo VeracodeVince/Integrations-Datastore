@@ -3,10 +3,8 @@ package com.checkmarx.integrations.datastore.controllers;
 import com.checkmarx.integrations.datastore.controllers.exceptions.RepoNotFoundException;
 import com.checkmarx.integrations.datastore.dto.RepoDto;
 import com.checkmarx.integrations.datastore.dto.SCMRepoDto;
-import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.models.ScmRepo;
-import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.RepoService;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.utils.ErrorMessagesHelper;
@@ -30,7 +28,6 @@ public class RepoController {
 
     private final RepoService repoService;
     private final ScmService scmService;
-    private final OrgService orgService;
 
     @Operation(summary = "Gets a SCM org repos")
     @GetMapping
@@ -57,7 +54,7 @@ public class RepoController {
     @PostMapping
     public ResponseEntity storeScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
         log.trace("storeScmRepo: scmRepoDto={}", scmRepoDto);
-        ScmOrg scmOrgByName = createOrGetScmOrgByScmUrl(scmRepoDto);
+        ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmRepoDto.getScmUrl(), scmRepoDto.getOrgName());
         repoService.createScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
 
         return ResponseEntity.ok().build();
@@ -67,17 +64,9 @@ public class RepoController {
     @PutMapping
     public ResponseEntity updateScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
         log.trace("updateScmRepo: scmRepoDto={}", scmRepoDto);
-        ScmOrg scmOrgByName = createOrGetScmOrgByScmUrl(scmRepoDto);
+        ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmRepoDto.getScmUrl(), scmRepoDto.getOrgName());
         repoService.updateScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
 
         return ResponseEntity.ok().build();
-    }
-
-    private ScmOrg createOrGetScmOrgByScmUrl(@RequestBody SCMRepoDto scmRepoDto) {
-        Scm scmByBaseUrl = scmService.createOrGetScmByBaseUrl(scmRepoDto.getScmUrl());
-        log.trace("createOrGetScmByBaseUrl: Scm:{}", scmByBaseUrl);
-        ScmOrg scmOrgByName = orgService.createOrGetScmOrgByName(scmByBaseUrl, scmRepoDto.getOrgName());
-        log.trace("createOrGetScmOrgByName: scmOrgByName:{}", scmOrgByName);
-        return scmOrgByName;
     }
 }
