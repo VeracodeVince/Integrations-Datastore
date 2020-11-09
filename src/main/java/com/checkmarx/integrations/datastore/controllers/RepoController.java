@@ -57,12 +57,27 @@ public class RepoController {
     @PostMapping
     public ResponseEntity storeScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
         log.trace("storeScmRepo: scmRepoDto={}", scmRepoDto);
+        ScmOrg scmOrgByName = createOrGetScmOrgByScmUrl(scmRepoDto);
+        repoService.createScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Updates SCM repo Webhook configuration")
+    @PutMapping
+    public ResponseEntity updateScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
+        log.trace("updateScmRepo: scmRepoDto={}", scmRepoDto);
+        ScmOrg scmOrgByName = createOrGetScmOrgByScmUrl(scmRepoDto);
+        repoService.updateScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
+
+        return ResponseEntity.ok().build();
+    }
+
+    private ScmOrg createOrGetScmOrgByScmUrl(@RequestBody SCMRepoDto scmRepoDto) {
         Scm scmByBaseUrl = scmService.createOrGetScmByBaseUrl(scmRepoDto.getScmUrl());
         log.trace("createOrGetScmByBaseUrl: Scm:{}", scmByBaseUrl);
         ScmOrg scmOrgByName = orgService.createOrGetScmOrgByName(scmByBaseUrl, scmRepoDto.getOrgName());
         log.trace("createOrGetScmOrgByName: scmOrgByName:{}", scmOrgByName);
-        repoService.updateScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
-
-        return ResponseEntity.ok().build();
+        return scmOrgByName;
     }
 }

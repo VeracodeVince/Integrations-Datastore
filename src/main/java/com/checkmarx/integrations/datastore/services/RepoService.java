@@ -24,7 +24,7 @@ public class RepoService {
         return scmRepoRepository.getRepo(scmBaseUrl, orgName, repoName);
     }
 
-    public void updateScmOrgRepos(ScmOrg scmOrg, List<RepoDto> repoDtoList) {
+    public void createScmOrgRepos(ScmOrg scmOrg, List<RepoDto> repoDtoList) {
         List<ScmRepo> scmRepoList = new ArrayList<>();
 
         repoDtoList.forEach(repoDto -> {
@@ -38,6 +38,23 @@ public class RepoService {
             }
         });
         scmRepoRepository.saveAll(scmRepoList);
+    }
+
+    public void updateScmOrgRepos(ScmOrg scmOrg, List<RepoDto> repoDtoList) {
+        repoDtoList.forEach(repoDto -> {
+            ScmRepo scmRepo = ScmRepo.builder()
+                    .scmOrg(scmOrg)
+                    .name(repoDto.getName())
+                    .isWebhookConfigured(repoDto.isWebhookConfigured())
+                    .build();
+            if (isScmRepoExists(scmOrg, scmRepo)) {
+                ScmRepo repoToUpdate = scmRepoRepository.getRepoByName(scmOrg.getName(), scmRepo.getName());
+                repoToUpdate.setWebhookConfigured(scmRepo.isWebhookConfigured());
+                scmRepoRepository.save(repoToUpdate);
+            } else {
+                scmRepoRepository.saveAndFlush(scmRepo);
+            }
+        });
     }
 
     private boolean isScmRepoExists(ScmOrg scmOrg, ScmRepo scmRepo) {
