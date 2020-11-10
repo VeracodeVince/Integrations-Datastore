@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "name",
+        "webhook_id",
         "is_webhook_configured"
 })
 
@@ -20,6 +21,8 @@ public class RepoDto {
 
     @JsonProperty("name")
     private String name;
+    @JsonProperty("webhook_id")
+    private long webhookId;
     @JsonProperty("is_webhook_configured")
     private boolean isWebhookConfigured;
 }
