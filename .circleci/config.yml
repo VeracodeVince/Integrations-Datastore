@@ -217,17 +217,17 @@ workflows:
       - deploy:
           requires:
             - build-image
-      - system-tests:
-          matrix:
-            parameters:
-              os: [linux, macos]
-              node-version: ["10.9.0", "11.9.0",]
-          requires:
-            - deploy
+#      - system-tests:
+#          matrix:
+#            parameters:
+#              os: [linux, macos]
+#              node-version: ["10.9.0", "11.9.0",]
+#          requires:
+#            - deploy
       - publish-to-DockerHub:
           filters:
             branches:
               only:
                 - master
-          requires:
-            - system-tests
+#          requires:
+#            - system-tests
