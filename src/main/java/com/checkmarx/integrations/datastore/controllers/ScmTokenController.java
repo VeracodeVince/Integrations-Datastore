@@ -49,8 +49,8 @@ public class ScmTokenController {
                 .build();
     }
 
-    @Operation(summary = "Stores SCM access token")
-    @PostMapping(value = "/storeScmAccessToken")
+    @Operation(summary = "Stores or updates SCM access token")
+    @PutMapping(value = "/storeScmAccessToken")
     public ResponseEntity storeScmAccessToken(@RequestBody SCMAccessTokenDto scmAccessTokenDto) {
         log.trace("storeScmAccessToken: scmAccessTokenDto={}", scmAccessTokenDto);
         ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgName());
