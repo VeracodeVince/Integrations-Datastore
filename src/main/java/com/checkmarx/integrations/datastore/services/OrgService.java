@@ -19,10 +19,6 @@ public class OrgService {
         return scmOrgRepository.getScmOrg(orgName, scmBaseUrl);
     }
 
-    public ScmOrg createScmOrg(ScmOrg scmOrg) {
-        return scmOrgRepository.saveAndFlush(scmOrg);
-    }
-
     public void deleteScmOrgById(Long id) {
         scmOrgRepository.deleteById(id);
     }
@@ -45,6 +41,10 @@ public class OrgService {
                     .build();
             return createScmOrg(scmOrg);
         }
+    }
+
+    private ScmOrg createScmOrg(ScmOrg scmOrg) {
+        return scmOrgRepository.saveAndFlush(scmOrg);
     }
 
     private void createOrUpdateCxTeam(ScmOrg scmOrg, String cxTeam) {

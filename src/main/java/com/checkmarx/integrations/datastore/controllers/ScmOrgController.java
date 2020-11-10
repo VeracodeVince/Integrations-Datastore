@@ -1,6 +1,7 @@
 package com.checkmarx.integrations.datastore.controllers;
 
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
+import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.ScmService;
@@ -29,10 +30,10 @@ public class ScmOrgController {
 
     @Operation(summary = "Stores a SCM org")
     @PostMapping
-    public ScmOrg storeScmOrg(@RequestBody final ScmOrg scmOrg) {
-        log.trace("storeScmOrg: scmOrg={}", scmOrg);
+    public ScmOrg storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
+        log.trace("storeScmOrg: scmOrgDto={}", scmOrgDto);
 
-        return orgService.createScmOrg(scmOrg);
+        return scmService.createOrGetScmOrgByScmUrl(scmOrgDto.getScmUrl(), scmOrgDto.getOrgName());
     }
 
     @Operation(summary = "Stores SCM org with Cx-Flow properties")
