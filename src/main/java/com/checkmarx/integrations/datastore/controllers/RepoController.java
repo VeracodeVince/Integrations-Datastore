@@ -50,17 +50,7 @@ public class RepoController {
         return ResponseEntity.ok(ObjectMapperUtil.map(scmRepo, RepoDto.class));
     }
 
-    @Operation(summary = "Stores SCM repo")
-    @PostMapping
-    public ResponseEntity storeScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
-        log.trace("storeScmRepo: scmRepoDto={}", scmRepoDto);
-        ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmRepoDto.getScmUrl(), scmRepoDto.getOrgName());
-        repoService.createScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
-
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "Updates SCM repo Webhook configuration")
+    @Operation(summary = "Stores or updates SCM repos")
     @PutMapping
     public ResponseEntity updateScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
         log.trace("updateScmRepo: scmRepoDto={}", scmRepoDto);
