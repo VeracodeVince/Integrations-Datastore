@@ -229,5 +229,5 @@ workflows:
             branches:
               only:
                 - master
-#          requires:
-#            - system-tests
+          requires:
+            - deploy
