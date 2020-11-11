@@ -30,16 +30,16 @@ public class TokenService {
         return scmTokenRepository.getToken(orgName, type);
     }
 
-    private Token addToken(Token token) {
-        return scmTokenRepository.saveAndFlush(token);
+    private void addToken(Token token) {
+        scmTokenRepository.saveAndFlush(token);
     }
 
-    private Token createTokenByScmOrg(ScmOrg scmOrg, String type, String rawToken) {
+    private void createTokenByScmOrg(ScmOrg scmOrg, String type, String rawToken) {
         Token tokenToCreate = Token.builder()
                 .scmOrg(scmOrg)
                 .type(type)
                 .accessToken(rawToken)
                 .build();
-        return addToken(tokenToCreate);
+        addToken(tokenToCreate);
     }
 }
