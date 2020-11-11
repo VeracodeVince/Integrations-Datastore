@@ -194,11 +194,12 @@ jobs:
           command: |
             docker load -i datastore-image.tar
             docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 checkmarx/integrations-datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
+            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 checkmarx/integrations-datastore:latest
       - run:
           name: Publish Docker images to Docker Hub
           command: |
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD} docker.io
-            docker push checkmarx/integrations-datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
+            docker push checkmarx/integrations-datastore
 
 workflows:
   ci-cd:
