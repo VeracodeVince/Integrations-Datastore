@@ -32,10 +32,13 @@ public class RepoController {
     @Operation(summary = "Gets a SCM org repos")
     @GetMapping
     public List<RepoDto> getScmReposByOrgName(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
-        log.trace("getScmReposByOrg: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
+        log.trace("getScmReposByOrgName: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
         List<ScmRepo> scmRepoList = repoService.getScmReposByOrgName(scmBaseUrl, orgName);
 
-        return ObjectMapperUtil.mapList(scmRepoList, RepoDto.class);
+        List<RepoDto> repoDtoList = ObjectMapperUtil.mapList(scmRepoList, RepoDto.class);
+        log.trace("getScmReposByOrgName: repoDtoList:{}", repoDtoList);
+
+        return repoDtoList;
     }
 
     @Operation(summary = "Gets SCM repo by name")
@@ -47,14 +50,18 @@ public class RepoController {
         ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmBaseUrl, orgName, repoName))
                 .orElseThrow(() -> new RepoNotFoundException(String.format(ErrorMessagesHelper.REPO_NOT_FOUND, repoName)));
 
-        return ResponseEntity.ok(ObjectMapperUtil.map(scmRepo, RepoDto.class));
+        RepoDto repoDto = ObjectMapperUtil.map(scmRepo, RepoDto.class);
+        log.trace("getScmRepo: repoDto:{}", repoDto);
+
+        return ResponseEntity.ok(repoDto);
     }
 
     @Operation(summary = "Stores or updates SCM repos")
     @PutMapping
     public ResponseEntity updateScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
-        log.trace("updateScmRepo: scmRepoDto={}", scmRepoDto);
+        log.trace("updateScmRepo: scmRepoDto={}", scmRepoDto.toString());
         ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmRepoDto.getScmUrl(), scmRepoDto.getOrgName());
+        log.trace("updateScmRepo: scmOrgByName={}", scmOrgByName);
         repoService.updateScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
 
         return ResponseEntity.ok().build();

@@ -24,16 +24,20 @@ public class ScmOrgController {
     @GetMapping()
     public ScmOrg getScmOrg(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
         log.trace("getScmOrg: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
+        ScmOrg scmOrg = orgService.getOrgBy(scmBaseUrl, orgName);
+        log.trace("getScmOrg: scmOrg={}", scmOrg);
 
-        return orgService.getOrgBy(scmBaseUrl, orgName);
+        return scmOrg;
     }
 
     @Operation(summary = "Stores a SCM org")
     @PostMapping
     public ScmOrg storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
         log.trace("storeScmOrg: scmOrgDto={}", scmOrgDto);
+        ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(scmOrgDto.getScmUrl(), scmOrgDto.getOrgName());
+        log.trace("storeScmOrg: scmOrg={}", scmOrg);
 
-        return scmService.createOrGetScmOrgByScmUrl(scmOrgDto.getScmUrl(), scmOrgDto.getOrgName());
+        return scmOrg;
     }
 
     @Operation(summary = "Stores SCM org with Cx-Flow properties")
@@ -41,6 +45,7 @@ public class ScmOrgController {
     public ScmOrg storeCxFlowProperties(@RequestBody final CxFlowPropertiesDto cxFlowPropertiesDto) {
         log.trace("storeCxFlowProperties: cxFlowPropertiesDto={}", cxFlowPropertiesDto);
         ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(cxFlowPropertiesDto.getScmUrl(), cxFlowPropertiesDto.getOrgName());
+        log.trace("storeCxFlowProperties: scmOrg={}", scmOrg);
         orgService.updateCxFlowProperties(scmOrg, cxFlowPropertiesDto);
 
         return scmOrg;

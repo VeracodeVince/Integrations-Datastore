@@ -35,8 +35,10 @@ public class ScmController {
     public SCMDto getScmByBaseUrl(@PathVariable String baseUrl) {
         log.trace("getScmByBaseUrl: baseUrl:{}", baseUrl);
         Scm scmByBaseUrl = scmService.getScmByBaseUrl(baseUrl);
+        SCMDto scmDto = ObjectMapperUtil.map(scmByBaseUrl, SCMDto.class);
+        log.trace("getScmByBaseUrl: scmDto={}", scmDto);
 
-        return ObjectMapperUtil.map(scmByBaseUrl, SCMDto.class);
+        return scmDto;
     }
 
     @Operation(summary = "Stores a new SCM")
