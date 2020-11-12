@@ -22,7 +22,7 @@ public class RepoDto {
     @JsonProperty("name")
     private String name;
     @JsonProperty("webhook_id")
-    private long webhookId;
+    private String webhookId;
     @JsonProperty("is_webhook_configured")
     private boolean isWebhookConfigured;
 }

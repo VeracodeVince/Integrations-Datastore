@@ -34,7 +34,7 @@ CREATE TABLE scm_repos
 	id						        SERIAL PRIMARY KEY,
 	org_id					      int,
 	name					        varchar(50),
-	webhook_id				    int,
+	webhook_id				    varchar(50),
 	is_webhook_configured	boolean,
 	unique (org_id, name),
 

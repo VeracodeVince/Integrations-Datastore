@@ -29,7 +29,7 @@ public class ScmRepo {
     private String name;
 
     @Column(name = "webhook_id")
-    private Long webhookId;
+    private String webhookId;
 
     @Column(name = "is_webhook_configured")
     private boolean isWebhookConfigured;
