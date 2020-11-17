@@ -6,6 +6,6 @@ RUN apt update && \
     apt upgrade -y && \
     apt install curl -y
 COPY target/cx-integrations-datastore-*.jar cx-integrations-datastore.jar
-HEALTHCHECK CMD curl http://localhost:80/actuator/health
+HEALTHCHECK CMD curl http://localhost:8080/actuator/health
 
 ENTRYPOINT ["java", "-Xms512m", "-Xmx2048m", "-jar", "cx-integrations-datastore.jar"]
