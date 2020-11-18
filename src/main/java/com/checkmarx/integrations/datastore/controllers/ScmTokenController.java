@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -52,13 +53,15 @@ public class ScmTokenController {
         return scmAccessTokenDto;
     }
 
-    @Operation(summary = "Stores or updates SCM access token")
+    @Operation(summary = "Stores or updates SCM access tokens")
     @PutMapping(value = "/storeScmAccessToken")
-    public ResponseEntity storeScmAccessToken(@RequestBody SCMAccessTokenDto scmAccessTokenDto) {
-        log.trace("storeScmAccessToken: scmAccessTokenDto={}", scmAccessTokenDto);
-        ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgName());
-        log.trace("storeScmAccessToken: scmOrgByName={}", scmOrgByName);
-        tokenService.updateTokenIfExists(scmOrgByName, scmAccessTokenDto.getTokenType(), scmAccessTokenDto.getAccessToken());
+    public ResponseEntity storeScmAccessToken(@RequestBody List<SCMAccessTokenDto> scmAccessTokenDtoList) {
+        log.trace("storeScmAccessToken: scmAccessTokenDtoList={}", scmAccessTokenDtoList);
+        scmAccessTokenDtoList.forEach(scmAccessTokenDto -> {
+            ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgName());
+            log.trace("storeScmAccessToken: scmOrgByName={}", scmOrgByName);
+            tokenService.updateTokenIfExists(scmOrgByName, scmAccessTokenDto.getTokenType(), scmAccessTokenDto.getAccessToken());
+        });
 
         return ResponseEntity.ok().build();
     }

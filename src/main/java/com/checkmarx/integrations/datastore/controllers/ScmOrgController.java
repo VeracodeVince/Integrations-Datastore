@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -29,12 +30,12 @@ public class ScmOrgController {
 
     @Operation(summary = "Stores a SCM org")
     @PostMapping
-    public ScmOrg storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
+    public ResponseEntity storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
         log.trace("storeScmOrg: scmOrgDto={}", scmOrgDto);
         ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(scmOrgDto.getScmUrl(), scmOrgDto.getOrgName());
         log.trace("storeScmOrg: scmOrg={}", scmOrg);
 
-        return scmOrg;
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Gets SCM org with Cx-Flow properties")
