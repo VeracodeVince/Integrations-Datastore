@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import static com.checkmarx.integrations.datastore.utils.DBConstHelper.TOKEN_MAX_LENGTH;
+
 @Getter
 @Setter
 @Builder
@@ -28,6 +30,6 @@ public class Token {
 
     private String type;
 
-    @Column(name = "token")
+    @Column(name = "token", length = TOKEN_MAX_LENGTH)
     private String accessToken;
 }
