@@ -41,12 +41,15 @@ public class ScmTokenController {
                 .orElseThrow(() ->
                         new TokenNotFoundException(String.format(ErrorMessagesHelper.ACCESS_TOKEN_NOT_FOUND, scmUrl, orgName)));
 
-        return SCMAccessTokenDto.builder()
+        SCMAccessTokenDto scmAccessTokenDto = SCMAccessTokenDto.builder()
                 .scmUrl(scmUrl)
                 .orgName(orgName)
                 .accessToken(token.getAccessToken())
                 .tokenType(token.getType())
                 .build();
+        log.trace("getScmAccessToken: scmAccessTokenDto={}", scmAccessTokenDto);
+
+        return scmAccessTokenDto;
     }
 
     @Operation(summary = "Stores or updates SCM access token")

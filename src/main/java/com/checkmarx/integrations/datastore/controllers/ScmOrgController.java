@@ -1,15 +1,22 @@
 package com.checkmarx.integrations.datastore.controllers;
 
+import com.checkmarx.integrations.datastore.controllers.exceptions.ScmOrgNotFoundException;
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+import static com.checkmarx.integrations.datastore.utils.ErrorMessagesHelper.BASE_URL_WITH_ORG_NOT_FOUND;
 
 @RestController
 @RequestMapping("/orgs")
@@ -20,16 +27,6 @@ public class ScmOrgController {
     private final OrgService orgService;
     private final ScmService scmService;
 
-    @Operation(summary = "Gets a SCM org")
-    @GetMapping()
-    public ScmOrg getScmOrg(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
-        log.trace("getScmOrg: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
-        ScmOrg scmOrg = orgService.getOrgBy(scmBaseUrl, orgName);
-        log.trace("getScmOrg: scmOrg={}", scmOrg);
-
-        return scmOrg;
-    }
-
     @Operation(summary = "Stores a SCM org")
     @PostMapping
     public ScmOrg storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
@@ -38,6 +35,28 @@ public class ScmOrgController {
         log.trace("storeScmOrg: scmOrg={}", scmOrg);
 
         return scmOrg;
+    }
+
+    @Operation(summary = "Gets SCM org with Cx-Flow properties")
+    @GetMapping(value = "/properties")
+    @ApiResponse(responseCode = "200", description = "Cx-Flow properties found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Cx-Flow properties not found", content = @Content)
+    public CxFlowPropertiesDto getCxFlowProperties(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
+        log.trace("getCxFlowProperties: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
+        ScmOrg scmOrg = Optional.ofNullable(orgService.getOrgBy(scmBaseUrl, orgName))
+                .orElseThrow(() -> new ScmOrgNotFoundException(String.format(BASE_URL_WITH_ORG_NOT_FOUND, scmBaseUrl, orgName)));
+
+        CxFlowPropertiesDto cxFlowPropertiesDto =
+                CxFlowPropertiesDto.builder()
+                        .scmUrl(scmOrg.getScm().getBaseUrl())
+                        .cxGoToken(scmOrg.getCxGoToken())
+                        .cxTeam(scmOrg.getTeam())
+                        .cxFlowUrl(scmOrg.getCxFlowUrl())
+                        .orgName(scmOrg.getName())
+                        .build();
+        log.trace("getCxFlowProperties: cxFlowPropertiesDto={}", cxFlowPropertiesDto);
+
+        return cxFlowPropertiesDto;
     }
 
     @Operation(summary = "Stores SCM org with Cx-Flow properties")
