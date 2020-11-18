@@ -38,18 +38,17 @@ public class ScmService {
 
 	public ScmOrg createOrGetScmOrgByScmUrl(String scmUrl, String orgName) {
 		Scm scmByBaseUrl = createOrGetScmByBaseUrl(scmUrl);
-		log.trace("createOrGetScmByBaseUrl: Scm:{}", scmByBaseUrl);
-		ScmOrg scmOrgByName = orgService.createOrGetScmOrgByName(scmByBaseUrl, orgName);
-		log.trace("createOrGetScmOrgByName: scmOrgByName:{}", scmOrgByName);
-		return scmOrgByName;
+		return orgService.createOrGetScmOrgByName(scmByBaseUrl, orgName);
 	}
 
 	private Scm createOrGetScmByBaseUrl(String baseUrl) {
 		Scm scmByBaseUrl = getScmByBaseUrl(baseUrl);
 
 		if (scmByBaseUrl != null) {
+			log.trace("createOrGetScmByBaseUrl: scmByBaseUrl exists:{}", scmByBaseUrl);
 			return scmByBaseUrl;
 		} else {
+			log.trace("createOrGetScmByBaseUrl: creating new scmByBaseUrl:{}", scmByBaseUrl);
 			Scm scm = Scm.builder()
 					.baseUrl(baseUrl)
 					.build();

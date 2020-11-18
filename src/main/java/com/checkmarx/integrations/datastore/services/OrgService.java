@@ -5,12 +5,14 @@ import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrgService {
 
     private final ScmOrgRepository scmOrgRepository;
@@ -33,8 +35,10 @@ public class OrgService {
         ScmOrg orgByName = getOrgBy(scm.getBaseUrl(), orgName);
 
         if (orgByName != null) {
+            log.trace("createOrGetScmOrgByName: orgByName exists:{}", orgByName);
             return orgByName;
         } else {
+            log.trace("createOrGetScmOrgByName: creating new orgByName:{}", orgByName);
             ScmOrg scmOrg = ScmOrg.builder()
                     .name(orgName)
                     .scm(scm)
