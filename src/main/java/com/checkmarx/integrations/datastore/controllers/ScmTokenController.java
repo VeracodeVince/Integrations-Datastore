@@ -7,7 +7,7 @@ import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.services.TokenService;
-import com.checkmarx.integrations.datastore.utils.ErrorMessagesHelper;
+import com.checkmarx.integrations.datastore.utils.ErrorConstsMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +40,7 @@ public class ScmTokenController {
         Token token = Optional.ofNullable(orgService.getOrgBy(scmUrl, orgName))
                 .map(oName -> tokenService.getTokenByOrgName(oName.getName()))
                 .orElseThrow(() ->
-                        new TokenNotFoundException(String.format(ErrorMessagesHelper.ACCESS_TOKEN_NOT_FOUND, scmUrl, orgName)));
+                        new TokenNotFoundException(String.format(ErrorConstsMessages.ACCESS_TOKEN_NOT_FOUND, scmUrl, orgName)));
 
         SCMAccessTokenDto scmAccessTokenDto = SCMAccessTokenDto.builder()
                 .scmUrl(scmUrl)

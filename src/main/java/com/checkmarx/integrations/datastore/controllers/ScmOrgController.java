@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-import static com.checkmarx.integrations.datastore.utils.ErrorMessagesHelper.BASE_URL_WITH_ORG_NOT_FOUND;
+import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.BASE_URL_WITH_ORG_NOT_FOUND;
 
 @RestController
 @RequestMapping("/orgs")

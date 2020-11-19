@@ -1,8 +1,8 @@
 package com.checkmarx.integrations.datastore.utils;
 
-public class DBConstHelper {
+public class DBConsts {
 
-    private DBConstHelper() {
+    private DBConsts() {
     }
 
     public static final int TOKEN_MAX_LENGTH = 2500;

@@ -7,7 +7,7 @@ import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.models.ScmRepo;
 import com.checkmarx.integrations.datastore.services.RepoService;
 import com.checkmarx.integrations.datastore.services.ScmService;
-import com.checkmarx.integrations.datastore.utils.ErrorMessagesHelper;
+import com.checkmarx.integrations.datastore.utils.ErrorConstsMessages;
 import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,7 +48,7 @@ public class RepoController {
     public ResponseEntity<RepoDto> getScmRepo(@RequestParam String scmBaseUrl, @RequestParam String orgName, @PathVariable String repoName) {
         log.trace("getScmRepo: scmBaseUrl={}, orgName={}, repoName={}", scmBaseUrl, orgName, repoName);
         ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmBaseUrl, orgName, repoName))
-                .orElseThrow(() -> new RepoNotFoundException(String.format(ErrorMessagesHelper.REPO_NOT_FOUND, repoName)));
+                .orElseThrow(() -> new RepoNotFoundException(String.format(ErrorConstsMessages.REPO_NOT_FOUND, repoName)));
 
         RepoDto repoDto = ObjectMapperUtil.map(scmRepo, RepoDto.class);
         log.trace("getScmRepo: repoDto:{}", repoDto);

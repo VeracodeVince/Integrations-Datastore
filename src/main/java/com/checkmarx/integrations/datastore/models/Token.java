@@ -8,7 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-import static com.checkmarx.integrations.datastore.utils.DBConstHelper.TOKEN_MAX_LENGTH;
+import static com.checkmarx.integrations.datastore.utils.DBConsts.TOKEN_MAX_LENGTH;
 
 @Getter
 @Setter
