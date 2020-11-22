@@ -156,7 +156,7 @@ jobs:
             docker run -d --name pg-db -e POSTGRES_USER=${PG_DB_USER} -e POSTGRES_PASSWORD=${PG_DB_PASSWORD} -p 5432:5432 postgres:13.0
       - run:
           name: Deploy Datastore Docker Container
-          command: docker run -d --name datastore --network container:pg-db -e spring.datasource.url=jdbc:postgresql://localhost:5432/${PG_DB_USER} -e spring.datasource.username=${PG_DB_USER} -e spring.datasource.password=${PG_DB_PASSWORD} datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
+          command: docker run -d --name datastore --network container:pg-db -e spring.datasource.url=localhost:5432/${PG_DB_USER} -e spring.datasource.username=${PG_DB_USER} -e spring.datasource.password=${PG_DB_PASSWORD} datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
       - run:
           name: Wait for Datastore Application to be Up and Running
           # in curl command -4 flag stands for forcing curl to use IPv4 (--retry-connrefused won't work otherwise)
