@@ -41,7 +41,7 @@ public class ScmOrgController {
     @Operation(summary = "Gets SCM org with Cx-Flow properties")
     @GetMapping(value = "/properties")
     @ApiResponse(responseCode = "200", description = "Cx-Flow properties found", content = @Content)
-    @ApiResponse(responseCode = "404", description = "Cx-Flow properties not found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Cx-Flow properties were not found", content = @Content)
     public CxFlowPropertiesDto getCxFlowProperties(@RequestParam String scmBaseUrl, @RequestParam String orgIdentity) {
         log.trace("getCxFlowProperties: scmBaseUrl={}, orgIdentity={}", scmBaseUrl, orgIdentity);
         ScmOrg scmOrg = Optional.ofNullable(orgService.getOrgBy(scmBaseUrl, orgIdentity))

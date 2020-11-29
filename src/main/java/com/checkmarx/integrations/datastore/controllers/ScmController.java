@@ -38,8 +38,8 @@ public class ScmController {
 
     @Operation(summary = "Gets a SCM")
     @GetMapping(value = "{baseUrl}")
-    @ApiResponse(responseCode = "200", description = "SCM found", content = @Content)
-    @ApiResponse(responseCode = "404", description = "SCM not found", content = @Content)
+    @ApiResponse(responseCode = "200", description = "SCM base URL found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "SCM base URL wan not found", content = @Content)
     public SCMDto getScmByBaseUrl(@PathVariable String baseUrl) {
         log.trace("getScmByBaseUrl: baseUrl:{}", baseUrl);
         Scm scmByBaseUrl = Optional.ofNullable(scmService.getScmByBaseUrl(baseUrl))

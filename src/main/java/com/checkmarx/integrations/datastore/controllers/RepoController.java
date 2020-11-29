@@ -43,8 +43,8 @@ public class RepoController {
 
     @Operation(summary = "Gets SCM repo by repo identity")
     @GetMapping(value = "{repoIdentity}")
-    @ApiResponse(responseCode = "200", description = "Repo found", content = @Content)
-    @ApiResponse(responseCode = "404", description = "Repo not found", content = @Content)
+    @ApiResponse(responseCode = "200", description = "SCM Repo found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "SCM Repo was not found", content = @Content)
     public ResponseEntity<RepoDto> getScmRepo(@RequestParam String scmBaseUrl, @RequestParam String orgIdentity, @PathVariable String repoIdentity) {
         log.trace("getScmRepo: scmBaseUrl={}, orgIdentity={}, repoIdentity={}", scmBaseUrl, orgIdentity, repoIdentity);
         ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmBaseUrl, orgIdentity, repoIdentity))

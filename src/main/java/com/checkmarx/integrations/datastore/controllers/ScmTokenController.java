@@ -34,7 +34,7 @@ public class ScmTokenController {
     @Operation(summary = "Gets SCN access token")
     @GetMapping
     @ApiResponse(responseCode = "200", description = "Access token found", content = @Content)
-    @ApiResponse(responseCode = "404", description = "Access token not found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Access token was not found", content = @Content)
     public SCMAccessTokenDto getScmAccessToken(@RequestParam String scmUrl, @RequestParam String orgIdentity) {
         log.trace("getScmAccessToken: scmUrl={} orgIdentity={}", scmUrl, orgIdentity);
         Token token = Optional.ofNullable(orgService.getOrgBy(scmUrl, orgIdentity))
