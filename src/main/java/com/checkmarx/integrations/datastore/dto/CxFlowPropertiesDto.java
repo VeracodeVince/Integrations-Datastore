@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "scm_url",
-        "org_name",
+        "org_identity",
         "cx_flow_url",
         "cx_go_token",
         "cx_team"
@@ -25,8 +25,8 @@ public class CxFlowPropertiesDto {
 
     @JsonProperty("scm_url")
     private String scmUrl;
-    @JsonProperty("org_name")
-    private String orgName;
+    @JsonProperty("org_identity")
+    private String orgIdentity;
     @JsonProperty("cx_flow_url")
     private String cxFlowUrl;
     @JsonProperty("cx_go_token")

@@ -1,10 +1,13 @@
 package com.checkmarx.integrations.datastore.controllers;
 
+import com.checkmarx.integrations.datastore.controllers.exceptions.ScmNotFoundException;
 import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -14,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.SCM_NOT_FOUND;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,9 +38,12 @@ public class ScmController {
 
     @Operation(summary = "Gets a SCM")
     @GetMapping(value = "{baseUrl}")
+    @ApiResponse(responseCode = "200", description = "SCM found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "SCM not found", content = @Content)
     public SCMDto getScmByBaseUrl(@PathVariable String baseUrl) {
         log.trace("getScmByBaseUrl: baseUrl:{}", baseUrl);
-        Scm scmByBaseUrl = scmService.getScmByBaseUrl(baseUrl);
+        Scm scmByBaseUrl = Optional.ofNullable(scmService.getScmByBaseUrl(baseUrl))
+                .orElseThrow(() -> new ScmNotFoundException(String.format(SCM_NOT_FOUND, baseUrl)));
         SCMDto scmDto = ObjectMapperUtil.map(scmByBaseUrl, SCMDto.class);
         log.trace("getScmByBaseUrl: scmDto={}", scmDto);
 

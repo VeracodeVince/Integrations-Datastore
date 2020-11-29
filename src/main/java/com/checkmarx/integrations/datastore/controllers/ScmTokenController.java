@@ -35,16 +35,16 @@ public class ScmTokenController {
     @GetMapping
     @ApiResponse(responseCode = "200", description = "Access token found", content = @Content)
     @ApiResponse(responseCode = "404", description = "Access token not found", content = @Content)
-    public SCMAccessTokenDto getScmAccessToken(@RequestParam String scmUrl, @RequestParam String orgName) {
-        log.trace("getScmAccessToken: scmUrl={} orgName={}", scmUrl, orgName);
-        Token token = Optional.ofNullable(orgService.getOrgBy(scmUrl, orgName))
-                .map(oName -> tokenService.getTokenByOrgName(oName.getName()))
+    public SCMAccessTokenDto getScmAccessToken(@RequestParam String scmUrl, @RequestParam String orgIdentity) {
+        log.trace("getScmAccessToken: scmUrl={} orgIdentity={}", scmUrl, orgIdentity);
+        Token token = Optional.ofNullable(orgService.getOrgBy(scmUrl, orgIdentity))
+                .map(oName -> tokenService.getTokenByOrgIdentity(oName.getOrgIdentity()))
                 .orElseThrow(() ->
-                        new TokenNotFoundException(String.format(ErrorConstsMessages.ACCESS_TOKEN_NOT_FOUND, scmUrl, orgName)));
+                        new TokenNotFoundException(String.format(ErrorConstsMessages.ACCESS_TOKEN_NOT_FOUND, scmUrl, orgIdentity)));
 
         SCMAccessTokenDto scmAccessTokenDto = SCMAccessTokenDto.builder()
                 .scmUrl(scmUrl)
-                .orgName(orgName)
+                .orgIdentity(orgIdentity)
                 .accessToken(token.getAccessToken())
                 .tokenType(token.getType())
                 .build();
@@ -58,7 +58,7 @@ public class ScmTokenController {
     public ResponseEntity storeScmAccessToken(@RequestBody List<SCMAccessTokenDto> scmAccessTokenDtoList) {
         log.trace("storeScmAccessToken: scmAccessTokenDtoList={}", scmAccessTokenDtoList);
         scmAccessTokenDtoList.forEach(scmAccessTokenDto -> {
-            ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgName());
+            ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgIdentity());
             log.trace("storeScmAccessToken: scmOrgByName={}", scmOrgByName);
             tokenService.updateTokenIfExists(scmOrgByName, scmAccessTokenDto.getTokenType(), scmAccessTokenDto.getAccessToken());
         });

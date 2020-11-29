@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "scm_url",
-        "org_name"
+        "org_identity"
 })
 
 @Data
@@ -22,6 +22,6 @@ public class SCMOrgDto {
 
     @JsonProperty("scm_url")
     private String scmUrl;
-    @JsonProperty("org_name")
-    private String orgName;
+    @JsonProperty("org_identity")
+    private String orgIdentity;
 }

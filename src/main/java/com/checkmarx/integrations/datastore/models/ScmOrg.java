@@ -20,7 +20,7 @@ import static com.checkmarx.integrations.datastore.utils.DBConsts.TOKEN_MAX_LENG
 @AllArgsConstructor
 @Entity
 @Table(name = "scm_orgs", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"scm_id", "name"})})
+        @UniqueConstraint(columnNames = {"scm_id", "org_identity"})})
 public class ScmOrg {
 
     @Id
@@ -39,7 +39,8 @@ public class ScmOrg {
     @JsonIgnore
     private List<Token> tokenList = new ArrayList<>();
 
-    private String name;
+    @Column(name = "org_identity")
+    private String orgIdentity;
 
     @Column(name = "cx_flow_url")
     private String cxFlowUrl;

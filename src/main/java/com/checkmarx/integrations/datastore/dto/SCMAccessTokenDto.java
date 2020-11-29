@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "scm_url",
-        "org_name",
+        "org_identity",
         "accessToken",
         "tokenType"
 })
@@ -24,8 +24,8 @@ public class SCMAccessTokenDto {
 
     @JsonProperty("scm_url")
     private String scmUrl;
-    @JsonProperty("org_name")
-    private String orgName;
+    @JsonProperty("org_identity")
+    private String orgIdentity;
     private String accessToken;
     private String tokenType;
 }

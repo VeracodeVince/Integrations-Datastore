@@ -12,12 +12,12 @@ public class TokenService {
 
     private final ScmTokenRepository scmTokenRepository;
 
-    public Token getTokenByOrgName(String orgName) {
-        return scmTokenRepository.getTokenByOrgName(orgName);
+    public Token getTokenByOrgIdentity(String orgIdentity) {
+        return scmTokenRepository.getTokenByOrgIdentity(orgIdentity);
     }
 
     public void updateTokenIfExists(ScmOrg scmOrg, String type, String rawToken) {
-        Token token = getToken(scmOrg.getName(), type);
+        Token token = getToken(scmOrg.getOrgIdentity(), type);
         if (token != null) {
             token.setAccessToken(rawToken);
             scmTokenRepository.save(token);
@@ -26,8 +26,8 @@ public class TokenService {
         }
     }
 
-    private Token getToken(String orgName, String type) {
-        return scmTokenRepository.getToken(orgName, type);
+    private Token getToken(String orgIdentity, String type) {
+        return scmTokenRepository.getToken(orgIdentity, type);
     }
 
     private void addToken(Token token) {

@@ -17,8 +17,8 @@ public class OrgService {
 
     private final ScmOrgRepository scmOrgRepository;
 
-    public ScmOrg getOrgBy(String scmBaseUrl, String orgName) {
-        return scmOrgRepository.getScmOrg(orgName, scmBaseUrl);
+    public ScmOrg getOrgBy(String scmBaseUrl, String orgIdentity) {
+        return scmOrgRepository.getScmOrg(orgIdentity, scmBaseUrl);
     }
 
     public void deleteScmOrgById(Long id) {
@@ -31,16 +31,16 @@ public class OrgService {
         createOrUpdateCxTeam(scmOrg, cxFlowPropertiesDto.getCxTeam());
     }
 
-    ScmOrg createOrGetScmOrgByName(Scm scm, String orgName) {
-        ScmOrg orgByName = getOrgBy(scm.getBaseUrl(), orgName);
+    ScmOrg createOrGetScmOrgByOrgIdentity(Scm scm, String orgIdentity) {
+        ScmOrg orgByIdentity = getOrgBy(scm.getBaseUrl(), orgIdentity);
 
-        if (orgByName != null) {
-            log.trace("createOrGetScmOrgByName: orgByName exists:{}", orgByName);
-            return orgByName;
+        if (orgByIdentity != null) {
+            log.trace("createOrGetScmOrgByOrgIdentity: orgByIdentity exists:{}", orgByIdentity);
+            return orgByIdentity;
         } else {
-            log.trace("createOrGetScmOrgByName: creating new orgByName:{}", orgByName);
+            log.trace("createOrGetScmOrgByOrgIdentity: creating new orgByIdentity");
             ScmOrg scmOrg = ScmOrg.builder()
-                    .name(orgName)
+                    .orgIdentity(orgIdentity)
                     .scm(scm)
                     .build();
             return createScmOrg(scmOrg);

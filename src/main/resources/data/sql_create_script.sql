@@ -17,12 +17,12 @@ CREATE TABLE scm_orgs
 (
 	id				      SERIAL PRIMARY KEY,
 	scm_id			    int,
-	name			      varchar(50),
+	org_identity		varchar(50),
 	cx_flow_url 	  varchar(50),
   cx_flow_config 	varchar(1000),
 	cx_go_token 	  varchar(100),
 	team			      varchar(50),
-	unique (scm_id, name),
+	unique (scm_id, org_identity),
 
 	CONSTRAINT fk_scm_orgs
 		FOREIGN KEY (scm_id)

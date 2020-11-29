@@ -32,7 +32,7 @@ public class ScmOrgController {
     @PostMapping
     public ResponseEntity storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
         log.trace("storeScmOrg: scmOrgDto={}", scmOrgDto);
-        ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(scmOrgDto.getScmUrl(), scmOrgDto.getOrgName());
+        ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(scmOrgDto.getScmUrl(), scmOrgDto.getOrgIdentity());
         log.trace("storeScmOrg: scmOrg={}", scmOrg);
 
         return ResponseEntity.ok().build();
@@ -42,10 +42,10 @@ public class ScmOrgController {
     @GetMapping(value = "/properties")
     @ApiResponse(responseCode = "200", description = "Cx-Flow properties found", content = @Content)
     @ApiResponse(responseCode = "404", description = "Cx-Flow properties not found", content = @Content)
-    public CxFlowPropertiesDto getCxFlowProperties(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
-        log.trace("getCxFlowProperties: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
-        ScmOrg scmOrg = Optional.ofNullable(orgService.getOrgBy(scmBaseUrl, orgName))
-                .orElseThrow(() -> new ScmOrgNotFoundException(String.format(BASE_URL_WITH_ORG_NOT_FOUND, scmBaseUrl, orgName)));
+    public CxFlowPropertiesDto getCxFlowProperties(@RequestParam String scmBaseUrl, @RequestParam String orgIdentity) {
+        log.trace("getCxFlowProperties: scmBaseUrl={}, orgIdentity={}", scmBaseUrl, orgIdentity);
+        ScmOrg scmOrg = Optional.ofNullable(orgService.getOrgBy(scmBaseUrl, orgIdentity))
+                .orElseThrow(() -> new ScmOrgNotFoundException(String.format(BASE_URL_WITH_ORG_NOT_FOUND, scmBaseUrl, orgIdentity)));
 
         CxFlowPropertiesDto cxFlowPropertiesDto =
                 CxFlowPropertiesDto.builder()
@@ -53,7 +53,7 @@ public class ScmOrgController {
                         .cxGoToken(scmOrg.getCxGoToken())
                         .cxTeam(scmOrg.getTeam())
                         .cxFlowUrl(scmOrg.getCxFlowUrl())
-                        .orgName(scmOrg.getName())
+                        .orgIdentity(scmOrg.getOrgIdentity())
                         .build();
         log.trace("getCxFlowProperties: cxFlowPropertiesDto={}", cxFlowPropertiesDto);
 
@@ -64,7 +64,7 @@ public class ScmOrgController {
     @PostMapping(value = "/properties")
     public ScmOrg storeCxFlowProperties(@RequestBody final CxFlowPropertiesDto cxFlowPropertiesDto) {
         log.trace("storeCxFlowProperties: cxFlowPropertiesDto={}", cxFlowPropertiesDto);
-        ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(cxFlowPropertiesDto.getScmUrl(), cxFlowPropertiesDto.getOrgName());
+        ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(cxFlowPropertiesDto.getScmUrl(), cxFlowPropertiesDto.getOrgIdentity());
         log.trace("storeCxFlowProperties: scmOrg={}", scmOrg);
         orgService.updateCxFlowProperties(scmOrg, cxFlowPropertiesDto);
 

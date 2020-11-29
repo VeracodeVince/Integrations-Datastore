@@ -38,6 +38,17 @@ public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(generalExceptionDO, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ScmNotFoundException.class)
+    public ResponseEntity<Object> handleScmNotFoundException(ScmNotFoundException e) {
+
+        GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
+                .message(e.getMessage())
+                .localDateTime(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionDO, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(RepoNotFoundException.class)
     public ResponseEntity<Object> handleReponNotFoundException(RepoNotFoundException e) {
 

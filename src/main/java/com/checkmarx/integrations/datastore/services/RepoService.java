@@ -15,12 +15,12 @@ public class RepoService {
 
     private final ScmRepoRepository scmRepoRepository;
 
-    public List<ScmRepo> getScmReposByOrgName(String scmBaseUrl, String orgName) {
-        return scmRepoRepository.getScmReposByOrgName(scmBaseUrl, orgName);
+    public List<ScmRepo> getScmReposByOrgIdentity(String scmBaseUrl, String orgIdentity) {
+        return scmRepoRepository.getScmReposByOrgIdentity(scmBaseUrl, orgIdentity);
     }
 
-    public ScmRepo getScmRepo(String scmBaseUrl, String orgName, String repoIdentity) {
-        return scmRepoRepository.getRepo(scmBaseUrl, orgName, repoIdentity);
+    public ScmRepo getScmRepo(String scmBaseUrl, String orgIdentity, String repoIdentity) {
+        return scmRepoRepository.getRepo(scmBaseUrl, orgIdentity, repoIdentity);
     }
 
     public void updateScmOrgRepos(ScmOrg scmOrg, List<RepoDto> repoDtoList) {
@@ -28,7 +28,7 @@ public class RepoService {
             String repoIdentity = repoDto.getRepoIdentity();
 
             if (isScmRepoExists(scmOrg, repoIdentity)) {
-                ScmRepo repoToUpdate = scmRepoRepository.getRepoByIdentity(scmOrg.getName(), repoIdentity);
+                ScmRepo repoToUpdate = scmRepoRepository.getRepoByIdentity(scmOrg.getOrgIdentity(), repoIdentity);
                 repoToUpdate.setWebhookId(repoDto.getWebhookId());
                 repoToUpdate.setWebhookConfigured(repoDto.isWebhookConfigured());
                 scmRepoRepository.save(repoToUpdate);
@@ -45,6 +45,6 @@ public class RepoService {
     }
 
     private boolean isScmRepoExists(ScmOrg scmOrg, String repoIdentity) {
-        return scmRepoRepository.getRepoByIdentity(scmOrg.getName(), repoIdentity) != null;
+        return scmRepoRepository.getRepoByIdentity(scmOrg.getOrgIdentity(), repoIdentity) != null;
     }
 }

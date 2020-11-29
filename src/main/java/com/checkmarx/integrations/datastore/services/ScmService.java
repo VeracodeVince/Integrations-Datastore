@@ -36,9 +36,9 @@ public class ScmService {
 		scmRepository.save(scmToUpdate);
 	}
 
-	public ScmOrg createOrGetScmOrgByScmUrl(String scmUrl, String orgName) {
+	public ScmOrg createOrGetScmOrgByScmUrl(String scmUrl, String orgIdentity) {
 		Scm scmByBaseUrl = createOrGetScmByBaseUrl(scmUrl);
-		return orgService.createOrGetScmOrgByName(scmByBaseUrl, orgName);
+		return orgService.createOrGetScmOrgByOrgIdentity(scmByBaseUrl, orgIdentity);
 	}
 
 	private Scm createOrGetScmByBaseUrl(String baseUrl) {
