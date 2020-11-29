@@ -27,6 +27,5 @@ public class SCMRepoDto {
     private String scmUrl;
     @JsonProperty("org_name")
     private String orgName;
-    @JsonProperty("repoList")
     private List<RepoDto> repoList;
 }

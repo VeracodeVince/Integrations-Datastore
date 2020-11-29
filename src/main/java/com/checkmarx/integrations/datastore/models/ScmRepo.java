@@ -15,7 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "scm_repos", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"org_id", "name"})})
+        @UniqueConstraint(columnNames = {"org_id", "repo_identity"})})
 public class ScmRepo {
 
     @Id
@@ -26,7 +26,8 @@ public class ScmRepo {
     @JoinColumn(name = "org_id")
     private ScmOrg scmOrg;
 
-    private String name;
+    @Column(name = "repo_identity")
+    private String repoIdentity;
 
     @Column(name = "webhook_id")
     private String webhookId;

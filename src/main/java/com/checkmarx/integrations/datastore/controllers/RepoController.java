@@ -41,14 +41,14 @@ public class RepoController {
         return repoDtoList;
     }
 
-    @Operation(summary = "Gets SCM repo by name")
-    @GetMapping(value = "{repoName}")
+    @Operation(summary = "Gets SCM repo by repo identity")
+    @GetMapping(value = "{repoIdentity}")
     @ApiResponse(responseCode = "200", description = "Repo found", content = @Content)
     @ApiResponse(responseCode = "404", description = "Repo not found", content = @Content)
-    public ResponseEntity<RepoDto> getScmRepo(@RequestParam String scmBaseUrl, @RequestParam String orgName, @PathVariable String repoName) {
-        log.trace("getScmRepo: scmBaseUrl={}, orgName={}, repoName={}", scmBaseUrl, orgName, repoName);
-        ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmBaseUrl, orgName, repoName))
-                .orElseThrow(() -> new RepoNotFoundException(String.format(ErrorConstsMessages.REPO_NOT_FOUND, repoName)));
+    public ResponseEntity<RepoDto> getScmRepo(@RequestParam String scmBaseUrl, @RequestParam String orgName, @PathVariable String repoIdentity) {
+        log.trace("getScmRepo: scmBaseUrl={}, orgName={}, repoIdentity={}", scmBaseUrl, orgName, repoIdentity);
+        ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmBaseUrl, orgName, repoIdentity))
+                .orElseThrow(() -> new RepoNotFoundException(String.format(ErrorConstsMessages.REPO_NOT_FOUND, repoIdentity)));
 
         RepoDto repoDto = ObjectMapperUtil.map(scmRepo, RepoDto.class);
         log.trace("getScmRepo: repoDto:{}", repoDto);

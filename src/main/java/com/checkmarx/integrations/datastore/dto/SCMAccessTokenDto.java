@@ -26,8 +26,6 @@ public class SCMAccessTokenDto {
     private String scmUrl;
     @JsonProperty("org_name")
     private String orgName;
-    @JsonProperty("accessToken")
     private String accessToken;
-    @JsonProperty("tokenType")
     private String tokenType;
 }

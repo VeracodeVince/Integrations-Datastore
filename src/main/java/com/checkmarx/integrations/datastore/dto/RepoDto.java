@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RepoDto {
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("repo_identity")
+    private String repoIdentity;
     @JsonProperty("webhook_id")
     private String webhookId;
     @JsonProperty("is_webhook_configured")

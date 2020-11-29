@@ -33,10 +33,10 @@ CREATE TABLE scm_repos
 (
 	id						        SERIAL PRIMARY KEY,
 	org_id					      int,
-	name					        varchar(50),
+	repo_identity					varchar(50),
 	webhook_id				    varchar(50),
 	is_webhook_configured	boolean,
-	unique (org_id, name),
+	unique (org_id, repo_identity),
 
 	CONSTRAINT fk_scm_repos
 		FOREIGN KEY (org_id)
