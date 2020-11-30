@@ -12,7 +12,7 @@ Feature: SCM CRUD APIs
             | github.com      | ff718111a48803ba73566 | 7a260229fc9adf2c34f5e06e2b665f0f06094666 |
             | gitlab.com      | ff718111a48803ba73562 | 7a260229fc9adf2c34f5e06e2b665f0f06094662 |
 
-    Scenario: Getting SCM details by a invalid SCM base url
+    Scenario: Getting SCM details by an invalid SCM base url
         Given data base does not contains "githubtest.com" base url
         When API client calls the `get scm` API for "githubtest.com"
         Then response status is 404
