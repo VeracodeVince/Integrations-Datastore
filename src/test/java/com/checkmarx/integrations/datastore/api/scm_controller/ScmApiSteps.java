@@ -1,4 +1,4 @@
-package com.checkmarx.integrations.datastore.api;
+package com.checkmarx.integrations.datastore.api.scm_controller;
 
 import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
