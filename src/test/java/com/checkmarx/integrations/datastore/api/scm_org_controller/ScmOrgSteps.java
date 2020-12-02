@@ -53,17 +53,19 @@ public class ScmOrgSteps {
     }
 
     @Then("{string} response status is {int}")
-    public void validateResponseCode(String endPoint, int statusCode) {
+    public void validateResponseCode(String endPoint, int expectedStatusCode) {
+        int actualStatusCode = 0;
+
         switch (endPoint) {
             case "storeScmOrg":
-                statusCode = postEndPointResponse.getStatusCodeValue();
+                actualStatusCode = postEndPointResponse.getStatusCodeValue();
                 break;
             case "getCxFlowProperties":
-                statusCode = getEndPointResponse.getStatusCodeValue();
+                actualStatusCode = getEndPointResponse.getStatusCodeValue();
                 break;
         }
-        Assert.assertEquals(endPoint + " response status is not as expected",
-                statusCode, statusCode);
+        Assert.assertEquals(endPoint + " response status code is not as expected",
+                expectedStatusCode, actualStatusCode);
     }
 
     @When("getCxFlowProperties endpoint is getting called")
