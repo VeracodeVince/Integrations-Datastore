@@ -1,5 +1,6 @@
 package com.checkmarx.integrations.datastore.services;
 
+import com.checkmarx.integrations.datastore.controllers.exceptions.ScmNotFoundException;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
@@ -8,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.SCM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +41,8 @@ public class ScmService {
 	}
 
 	public ScmOrg createOrGetScmOrgByScmUrl(String scmUrl, String orgIdentity) {
-		Scm scmByBaseUrl = createOrGetScmByBaseUrl(scmUrl);
+		Scm scmByBaseUrl = Optional.ofNullable(scmRepository.getScmByBaseUrl(scmUrl))
+				.orElseThrow(() -> new ScmNotFoundException(String.format(SCM_NOT_FOUND, scmUrl)));
 		return orgService.createOrGetScmOrgByOrgIdentity(scmByBaseUrl, orgIdentity);
 	}
 
