@@ -10,6 +10,14 @@ Feature: Test Scm Org Controller endpoints
     And response contains scmUrl field set to "githubTest.com"
     And response contains orgIdentity field set to "orgNameTest"
 
+  Scenario: Validate CxFlowProperties DTO is getting back successfully from database
+    Given cx-flow details are stored into database
+    When getCxFlowProperties endpoint is getting called
+    Then "getCxFlowProperties" response status is 200
+    And CxFlowProperties DTO details are fully retrieved
+
+
   Scenario: Get invalid scm org entity and validate returned response status is 404
     When getCxFlowProperties endpoint is getting called with invalid scm org
     Then "getCxFlowProperties" response status is 404
+

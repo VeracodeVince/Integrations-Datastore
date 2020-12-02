@@ -2,7 +2,9 @@ package com.checkmarx.integrations.datastore.api.scm_org_controller;
 
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
+import com.checkmarx.integrations.datastore.models.ScmOrg;
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.spring.CucumberContextConfiguration;
@@ -12,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Objects;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @CucumberContextConfiguration
@@ -25,6 +27,9 @@ public class ScmOrgSteps {
 
     private static final String SCM_URL = "githubTest.com";
     private static final String ORG_IDENTITY = "orgNameTest";
+    private static final String CX_FLOW_URL = "Cxflow.com";
+    private static final String CX_GO_TOKEN = "cx-go-token-123";
+    private static final String CX_TEAM = "cx-team-test";
 
     private ResponseEntity postEndPointResponse;
     private ResponseEntity<CxFlowPropertiesDto> getEndPointResponse;
@@ -63,12 +68,7 @@ public class ScmOrgSteps {
 
     @When("getCxFlowProperties endpoint is getting called")
     public void getCxFlowPropertiesEndPointIsGettingCalled() {
-        String path = String.format("http://localhost:%s/orgs/properties", port);
-        URI uri = UriComponentsBuilder.fromUriString(path)
-                .queryParam("scmBaseUrl", SCM_URL)
-                .queryParam("orgIdentity", ORG_IDENTITY)
-                .build()
-                .toUri();
+        URI uri = getCxFlowPropertiesEndPointUri(SCM_URL, ORG_IDENTITY);
         getEndPointResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
         cxFlowPropertiesDto = getEndPointResponse.getBody();
     }
@@ -85,12 +85,48 @@ public class ScmOrgSteps {
 
     @When("getCxFlowProperties endpoint is getting called with invalid scm org")
     public void getCxFlowPropertiesEndPointWithInvalidScmOrg() {
+        URI uri = getCxFlowPropertiesEndPointUri("invalidGithubTest.com", "invalidOrgNameTest");
+        getEndPointResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
+    }
+
+    @Given("cx-flow details are stored into database")
+    public void setCxFlowDetailsInDataBase() {
+        CxFlowPropertiesDto cxFlowPropertiesDto = CxFlowPropertiesDto.builder()
+                .scmUrl(SCM_URL)
+                .orgIdentity(ORG_IDENTITY)
+                .cxFlowUrl(CX_FLOW_URL)
+                .cxGoToken(CX_GO_TOKEN)
+                .cxTeam(CX_TEAM)
+                .build();
+
         String path = String.format("http://localhost:%s/orgs/properties", port);
-        URI uri = UriComponentsBuilder.fromUriString(path)
-                .queryParam("scmBaseUrl", "invalidGithubTest.com")
-                .queryParam("orgIdentity", "invalidOrgNameTest")
+        restTemplate.postForEntity(path, cxFlowPropertiesDto, ScmOrg.class);
+    }
+
+    @And("CxFlowProperties DTO details are fully retrieved")
+    public void validateCxFlowDtoDetails() {
+        URI uri = getCxFlowPropertiesEndPointUri(SCM_URL, ORG_IDENTITY);
+        getEndPointResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
+        CxFlowPropertiesDto cxFlowPropertiesDto = getEndPointResponse.getBody();
+
+        Assert.assertEquals("Scm URL is not as expected",
+                SCM_URL, Objects.requireNonNull(cxFlowPropertiesDto).getScmUrl());
+        Assert.assertEquals("Org identity is not as expected"
+                ,ORG_IDENTITY, Objects.requireNonNull(cxFlowPropertiesDto).getOrgIdentity());
+        Assert.assertEquals("Cx-Flow URL is not as expected"
+                ,CX_FLOW_URL, Objects.requireNonNull(cxFlowPropertiesDto).getCxFlowUrl());
+        Assert.assertEquals("Cx-GO token is not as expected"
+                ,CX_GO_TOKEN, Objects.requireNonNull(cxFlowPropertiesDto).getCxGoToken());
+        Assert.assertEquals("Cx-team token is not as expected"
+                ,CX_TEAM, Objects.requireNonNull(cxFlowPropertiesDto).getCxTeam());
+    }
+
+    private URI getCxFlowPropertiesEndPointUri(String scmUrl, String orgIdentity) {
+        String path = String.format("http://localhost:%s/orgs/properties", port);
+        return UriComponentsBuilder.fromUriString(path)
+                .queryParam("scmBaseUrl", scmUrl)
+                .queryParam("orgIdentity", orgIdentity)
                 .build()
                 .toUri();
-        getEndPointResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
     }
 }
