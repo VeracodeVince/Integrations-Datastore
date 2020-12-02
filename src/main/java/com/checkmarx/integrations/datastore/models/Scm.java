@@ -11,6 +11,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.checkmarx.integrations.datastore.utils.DBConsts.TOKEN_MAX_LENGTH;
+
 @Getter
 @Setter
 @Builder
@@ -35,6 +37,6 @@ public class Scm {
     @Column(name = "client_id")
     private String clientId;
 
-    @Column(name = "client_secret")
+    @Column(name = "client_secret", length = TOKEN_MAX_LENGTH)
     private String clientSecret;
 }
