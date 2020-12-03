@@ -39,8 +39,6 @@
         <url>https://www.checkmarx.com/</url>
     </organization>
     <build>
-        <sourceDirectory>${project.basedir}/src/main/java/</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
