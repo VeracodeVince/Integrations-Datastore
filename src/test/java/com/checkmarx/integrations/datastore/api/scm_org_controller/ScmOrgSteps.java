@@ -1,6 +1,7 @@
 package com.checkmarx.integrations.datastore.api.scm_org_controller;
 
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
+import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import io.cucumber.java.en.And;
@@ -43,6 +44,8 @@ public class ScmOrgSteps {
 
     @When("storeScmOrg endpoint is getting called")
     public void storeScmOrgEndPointIsGettingCalled() {
+        createScmInDb();
+
         String path = String.format("http://localhost:%s/orgs", port);
         SCMOrgDto scmOrgDto = SCMOrgDto.builder()
                 .scmUrl(SCM_URL)
@@ -130,5 +133,13 @@ public class ScmOrgSteps {
                 .queryParam("orgIdentity", orgIdentity)
                 .build()
                 .toUri();
+    }
+
+    private void createScmInDb() {
+        String path = String.format("http://localhost:%s/scms/storeScm", port);
+        SCMDto scmDto = SCMDto.builder()
+                .baseUrl(SCM_URL)
+                .build();
+        restTemplate.postForEntity(path, scmDto, ResponseEntity.class);
     }
 }
