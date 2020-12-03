@@ -8,5 +8,5 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/cucumber/features/scm-repo-api.feature",
         tags = "not @Skip")
-public class ScmRepoApiRunner {
+public class ScmRepoApiTest {
 }

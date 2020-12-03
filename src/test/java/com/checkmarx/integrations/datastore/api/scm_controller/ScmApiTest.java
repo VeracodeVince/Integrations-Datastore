@@ -7,5 +7,5 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = "src/test/resources/cucumber/features/scm-api.feature")
-public class ScmApiRunner {
+public class ScmApiTest {
 }
