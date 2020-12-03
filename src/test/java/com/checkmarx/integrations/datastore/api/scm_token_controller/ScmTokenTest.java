@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = "src/test/resources/cucumber/features/scm-token-api.feature")
+        features = "src/test/resources/cucumber/features/scm-token-api.feature",
+        plugin = { "pretty", "html:target/cucumber-html-report","json:target/cucumber.json" })
 public class ScmTokenTest {
 }
