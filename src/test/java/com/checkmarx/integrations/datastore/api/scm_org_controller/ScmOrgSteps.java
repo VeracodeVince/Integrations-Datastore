@@ -92,6 +92,7 @@ public class ScmOrgSteps {
 
     @Given("cx-flow details are stored into database")
     public void setCxFlowDetailsInDataBase() {
+        createScmInDb();
         CxFlowPropertiesDto cxFlowPropertiesDto = CxFlowPropertiesDto.builder()
                 .scmUrl(SCM_URL)
                 .orgIdentity(ORG_IDENTITY)
@@ -99,7 +100,6 @@ public class ScmOrgSteps {
                 .cxGoToken(CX_GO_TOKEN)
                 .cxTeam(CX_TEAM)
                 .build();
-
         String path = String.format("http://localhost:%s/orgs/properties", port);
         restTemplate.postForEntity(path, cxFlowPropertiesDto, ScmOrg.class);
     }

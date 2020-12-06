@@ -3,7 +3,10 @@ package com.checkmarx.integrations.datastore.api.scm_controller;
 import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -11,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 
 @Slf4j
 @CucumberContextConfiguration

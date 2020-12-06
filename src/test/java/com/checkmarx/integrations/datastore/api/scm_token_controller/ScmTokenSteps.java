@@ -1,9 +1,11 @@
 package com.checkmarx.integrations.datastore.api.scm_token_controller;
 
 import com.checkmarx.integrations.datastore.dto.SCMAccessTokenDto;
-import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
+import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
+import com.checkmarx.integrations.datastore.services.ScmService;
+import com.checkmarx.integrations.datastore.services.TokenService;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -38,6 +40,12 @@ public class ScmTokenSteps {
     private SCMAccessTokenDto scmAccessTokenDto;
     private ResponseEntity<SCMAccessTokenDto> storeResponseEntity;
     private ResponseEntity<SCMAccessTokenDto> getResponseEntity;
+
+    @Autowired
+    private ScmService scmService;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private ScmRepository scmRepository;
@@ -131,5 +139,20 @@ public class ScmTokenSteps {
                                        .tokenType(TOKEN_TYPE)
                                        .build());
         return scmAccessTokenDtos;
+    }
+
+    @Given("data base contains scm {string} with {string} and {string} and {string}")
+    public void dataBaseContainsScmWithAndAnd(String scmUrl, String orgIdentity, String accessToken,
+                                              String tokenType) {
+        prepareDataBase(scmUrl, orgIdentity, accessToken, tokenType);
+    }
+
+    private void prepareDataBase(String scmUrl, String orgIdentity, String accessToken,
+                                 String tokenType) {
+        scmRepository.saveAndFlush(Scm.builder()
+                                           .baseUrl(scmUrl)
+                                           .build());
+        ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmUrl, orgIdentity);
+        tokenService.updateTokenIfExists(scmOrgByName, tokenType, accessToken);
     }
 }

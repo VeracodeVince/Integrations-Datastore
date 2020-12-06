@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/cucumber/features/scm-repo-api.feature",
         plugin = { "pretty", "html:target/cucumber-html-report","json:target/cucumber.json" },
+        extraGlue = "com.checkmarx.integrations.datastore.api.shared",
         tags = "not @Skip")
 public class ScmRepoApiTest {
 }

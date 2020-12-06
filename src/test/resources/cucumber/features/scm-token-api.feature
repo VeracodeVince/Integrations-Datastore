@@ -10,6 +10,7 @@ Feature: Test Scm token Controller endpoints
       | gitlab.com   | ff718111a48803ba73562 | 7a260229fc9adf2c34f5e06e2b665f0f06094662 |
 
   Scenario: Validate scm org access token DTO details are getting back successfully from data store
+    Given data base contains scm "github.com" with "orgIdentityTest" and "access-token-ff718111a48803ba" and "access-token"
     When getScmAccessToken endpoint is getting called
     Then "getScmAccessToken" response status is 200
     And response contains scmUrl field set to "github.com"
