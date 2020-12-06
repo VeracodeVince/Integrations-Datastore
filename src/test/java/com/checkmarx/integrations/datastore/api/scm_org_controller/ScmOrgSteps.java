@@ -25,7 +25,6 @@ import java.util.Objects;
 @CucumberContextConfiguration
 @Slf4j
 public class ScmOrgSteps {
-
     private static final String SCM_URL = "githubTest.com";
     private static final String ORG_IDENTITY = "orgNameTest";
     private static final String CX_FLOW_URL = "Cxflow.com";
@@ -42,17 +41,9 @@ public class ScmOrgSteps {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @When("storeScmOrg endpoint is getting called")
-    public void storeScmOrgEndPointIsGettingCalled() {
-        createScmInDb();
-
-        String path = String.format("http://localhost:%s/orgs", port);
-        SCMOrgDto scmOrgDto = SCMOrgDto.builder()
-                .scmUrl(SCM_URL)
-                .orgIdentity(ORG_IDENTITY)
-                .build();
-
-        postEndPointResponse = restTemplate.postForEntity(path, scmOrgDto, ResponseEntity.class);
+    @When("storeScmOrg POST endpoint is getting called with {string} as scm-url and with {string} as org identity")
+    public void storeScmOrgEndPointIsGettingCalled(String scmUrl, String orgIdentity) {
+        storeScmOrg(scmUrl, orgIdentity);
     }
 
     @Then("{string} response status is {int}")
@@ -71,9 +62,14 @@ public class ScmOrgSteps {
                 expectedStatusCode, actualStatusCode);
     }
 
-    @When("getCxFlowProperties endpoint is getting called")
-    public void getCxFlowPropertiesEndPointIsGettingCalled() {
-        URI uri = getCxFlowPropertiesEndPointUri(SCM_URL, ORG_IDENTITY);
+    @Given("Scm org with {string} as scm-url and {string} as org identity is stored in database")
+    public void initData(String scmUrl, String orgIdentity) {
+        storeScmOrg(scmUrl, orgIdentity);
+    }
+
+    @When("getCxFlowProperties endpoint is getting called with {string} as scm-url and {string} as org identity")
+    public void getCxFlowPropertiesEndPointIsGettingCalled(String scmUrl, String orgIdentity) {
+        URI uri = getCxFlowPropertiesEndPointUri(scmUrl, orgIdentity);
         getEndPointResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
         cxFlowPropertiesDto = getEndPointResponse.getBody();
     }
@@ -88,7 +84,7 @@ public class ScmOrgSteps {
         Assert.assertEquals("Org identity is not as expected", orgIdentity, cxFlowPropertiesDto.getOrgIdentity());
     }
 
-    @When("getCxFlowProperties endpoint is getting called with invalid scm org")
+    @When("getCxFlowProperties endpoint is getting called with invalid scm org parameter")
     public void getCxFlowPropertiesEndPointWithInvalidScmOrg() {
         URI uri = getCxFlowPropertiesEndPointUri("invalidGithubTest.com", "invalidOrgNameTest");
         getEndPointResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
@@ -141,5 +137,20 @@ public class ScmOrgSteps {
                 .baseUrl(SCM_URL)
                 .build();
         restTemplate.postForEntity(path, scmDto, ResponseEntity.class);
+    }
+
+    private SCMOrgDto getScmOrgDto(String scmUrl, String orgIdentity) {
+        return SCMOrgDto.builder()
+                .scmUrl(scmUrl)
+                .orgIdentity(orgIdentity)
+                .build();
+    }
+
+    private void storeScmOrg(String scmUrl, String orgIdentity) {
+        createScmInDb();
+        String path = String.format("http://localhost:%s/orgs", port);
+        SCMOrgDto scmOrgDto = getScmOrgDto(scmUrl, orgIdentity);
+
+        postEndPointResponse = restTemplate.postForEntity(path, scmOrgDto, ResponseEntity.class);
     }
 }
