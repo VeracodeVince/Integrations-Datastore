@@ -53,7 +53,7 @@ public class ScmService {
 			log.trace("createOrGetScmByBaseUrl: scmByBaseUrl exists:{}", scmByBaseUrl);
 			return scmByBaseUrl;
 		} else {
-			log.trace("createOrGetScmByBaseUrl: creating new scmByBaseUrl:{}", scmByBaseUrl);
+			log.trace("createOrGetScmByBaseUrl: creating new scmByBaseUrl");
 			Scm scm = Scm.builder()
 					.baseUrl(baseUrl)
 					.build();

@@ -13,7 +13,7 @@ public class TestsSharedConfig {
 
     @Before
     public void before() {
-        SpringApplication springApplication=new SpringApplication(IntegrationsDataStoreApplication.class);
+        SpringApplication springApplication = new SpringApplication(IntegrationsDataStoreApplication.class);
         context =  springApplication.run();
     }
 
