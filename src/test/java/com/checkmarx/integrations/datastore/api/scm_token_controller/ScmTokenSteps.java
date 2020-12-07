@@ -152,7 +152,7 @@ public class ScmTokenSteps {
         scmRepository.saveAndFlush(Scm.builder()
                                            .baseUrl(scmUrl)
                                            .build());
-        ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmUrl, orgIdentity);
+        ScmOrg scmOrgByName = scmService.getScmOrgByScmUrlAndOrgIdentity(scmUrl, orgIdentity);
         tokenService.updateTokenIfExists(scmOrgByName, tokenType, accessToken);
     }
 }

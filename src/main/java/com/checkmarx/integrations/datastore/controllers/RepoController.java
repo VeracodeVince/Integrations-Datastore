@@ -60,7 +60,7 @@ public class RepoController {
     @PutMapping
     public ResponseEntity updateScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
         log.trace("updateScmRepo: scmRepoDto={}", scmRepoDto.toString());
-        ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmRepoDto.getScmUrl(), scmRepoDto.getOrgIdentity());
+        ScmOrg scmOrgByName = scmService.getScmOrgByScmUrlAndOrgIdentity(scmRepoDto.getScmUrl(), scmRepoDto.getOrgIdentity());
         log.trace("updateScmRepo: scmOrgByName={}", scmOrgByName);
         repoService.updateScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
 

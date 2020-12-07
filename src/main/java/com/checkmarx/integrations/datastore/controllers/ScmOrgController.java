@@ -32,7 +32,7 @@ public class ScmOrgController {
     @PostMapping
     public ResponseEntity storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
         log.trace("storeScmOrg: scmOrgDto={}", scmOrgDto);
-        ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(scmOrgDto.getScmUrl(), scmOrgDto.getOrgIdentity());
+        ScmOrg scmOrg = scmService.getScmOrgByScmUrlAndOrgIdentity(scmOrgDto.getScmUrl(), scmOrgDto.getOrgIdentity());
         log.trace("storeScmOrg: scmOrg={}", scmOrg);
 
         return ResponseEntity.ok().build();
@@ -64,7 +64,7 @@ public class ScmOrgController {
     @PostMapping(value = "/properties")
     public ScmOrg storeCxFlowProperties(@RequestBody final CxFlowPropertiesDto cxFlowPropertiesDto) {
         log.trace("storeCxFlowProperties: cxFlowPropertiesDto={}", cxFlowPropertiesDto);
-        ScmOrg scmOrg = scmService.createOrGetScmOrgByScmUrl(cxFlowPropertiesDto.getScmUrl(), cxFlowPropertiesDto.getOrgIdentity());
+        ScmOrg scmOrg = scmService.getScmOrgByScmUrlAndOrgIdentity(cxFlowPropertiesDto.getScmUrl(), cxFlowPropertiesDto.getOrgIdentity());
         log.trace("storeCxFlowProperties: scmOrg={}", scmOrg);
         orgService.updateCxFlowProperties(scmOrg, cxFlowPropertiesDto);
 

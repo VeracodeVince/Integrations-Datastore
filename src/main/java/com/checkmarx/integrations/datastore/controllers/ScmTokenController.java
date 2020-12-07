@@ -58,7 +58,7 @@ public class ScmTokenController {
     public ResponseEntity storeScmAccessToken(@RequestBody List<SCMAccessTokenDto> scmAccessTokenDtoList) {
         log.trace("storeScmAccessToken: scmAccessTokenDtoList={}", scmAccessTokenDtoList);
         scmAccessTokenDtoList.forEach(scmAccessTokenDto -> {
-            ScmOrg scmOrgByName = scmService.createOrGetScmOrgByScmUrl(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgIdentity());
+            ScmOrg scmOrgByName = scmService.getScmOrgByScmUrlAndOrgIdentity(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgIdentity());
             log.trace("storeScmAccessToken: scmOrgByName={}", scmOrgByName);
             tokenService.updateTokenIfExists(scmOrgByName, scmAccessTokenDto.getTokenType(), scmAccessTokenDto.getAccessToken());
         });

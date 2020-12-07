@@ -40,7 +40,7 @@ public class ScmService {
 		scmRepository.save(scmToUpdate);
 	}
 
-	public ScmOrg createOrGetScmOrgByScmUrl(String scmUrl, String orgIdentity) {
+	public ScmOrg getScmOrgByScmUrlAndOrgIdentity(String scmUrl, String orgIdentity) {
 		Scm scmByBaseUrl = Optional.ofNullable(scmRepository.getScmByBaseUrl(scmUrl))
 				.orElseThrow(() -> new ScmNotFoundException(String.format(SCM_NOT_FOUND, scmUrl)));
 		return orgService.createOrGetScmOrgByOrgIdentity(scmByBaseUrl, orgIdentity);
