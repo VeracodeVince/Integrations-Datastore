@@ -44,10 +44,7 @@ public class ScmController {
         log.trace("getScmByBaseUrl: baseUrl:{}", baseUrl);
         Scm scmByBaseUrl = Optional.ofNullable(scmService.getScmByBaseUrl(baseUrl))
                 .orElseThrow(() -> new ScmNotFoundException(String.format(SCM_NOT_FOUND, baseUrl)));
-        SCMDto scmDto = ObjectMapperUtil.map(scmByBaseUrl, SCMDto.class);
-        log.trace("getScmByBaseUrl: scmDto={}", scmDto);
-
-        return scmDto;
+        return ObjectMapperUtil.map(scmByBaseUrl, SCMDto.class);
     }
 
     @Operation(summary = "Stores a new SCM")
@@ -55,8 +52,7 @@ public class ScmController {
     public ResponseEntity storeScm(@RequestBody SCMDto scmDto) {
         log.trace("storeScm: scmDto={}", scmDto);
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        Scm scm = modelMapper.map(scmDto, Scm.class);
-        scmService.createOrUpdateScm(scm);
+        scmService.createOrUpdateScm(modelMapper.map(scmDto, Scm.class));
 
         return ResponseEntity.ok().build();
     }
