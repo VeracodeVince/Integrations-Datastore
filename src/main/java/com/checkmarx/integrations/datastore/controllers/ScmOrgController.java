@@ -3,6 +3,7 @@ package com.checkmarx.integrations.datastore.controllers;
 import com.checkmarx.integrations.datastore.controllers.exceptions.ScmOrgNotFoundException;
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
+import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.ScmService;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.BASE_URL_WITH_ORG_NOT_FOUND;
@@ -28,14 +30,20 @@ public class ScmOrgController {
     private final OrgService orgService;
     private final ScmService scmService;
 
-    @Operation(summary = "Stores a SCM org")
-    @PostMapping
-    public ResponseEntity storeScmOrg(@RequestBody final SCMOrgDto scmOrgDto) {
-        log.trace("storeScmOrg: scmOrgDto={}", scmOrgDto);
-        ScmOrg scmOrg = scmService.getScmOrgByScmUrlAndOrgIdentity(scmOrgDto.getScmUrl(), scmOrgDto.getOrgIdentity());
-        log.trace("storeScmOrg: scmOrg={}", scmOrg);
+    @Operation(summary = "Stores or updates SCM org token")
+    @PutMapping
+    public ResponseEntity storeScmOrgToken(@RequestBody final List<SCMOrgDto> scmOrgDtoList) {
+        log.trace("storeScmOrgToken: scmOrgDtoList={}", scmOrgDtoList);
+        scmOrgDtoList.forEach(orgService::createScmOrgByScmOrgDto);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Gets SCM org by name")
+    @GetMapping
+    public SCMOrgDto getScmOrgByName(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
+        log.trace("getScmOrgByName: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
+        return orgService.getOrgByName(scmBaseUrl, orgName);
     }
 
     @Operation(summary = "Gets SCM org with Cx-Flow properties")
@@ -64,7 +72,8 @@ public class ScmOrgController {
     @PostMapping(value = "/properties")
     public ScmOrg storeCxFlowProperties(@RequestBody final CxFlowPropertiesDto cxFlowPropertiesDto) {
         log.trace("storeCxFlowProperties: cxFlowPropertiesDto={}", cxFlowPropertiesDto);
-        ScmOrg scmOrg = scmService.getScmOrgByScmUrlAndOrgIdentity(cxFlowPropertiesDto.getScmUrl(), cxFlowPropertiesDto.getOrgIdentity());
+        Scm scm = scmService.getScmByScmUrl(cxFlowPropertiesDto.getScmUrl());
+        ScmOrg scmOrg = orgService.createOrGetScmOrgByOrgIdentity(scm, cxFlowPropertiesDto.getOrgIdentity());
         log.trace("storeCxFlowProperties: scmOrg={}", scmOrg);
         orgService.updateCxFlowProperties(scmOrg, cxFlowPropertiesDto);
 

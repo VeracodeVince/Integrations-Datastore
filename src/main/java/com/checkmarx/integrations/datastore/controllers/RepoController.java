@@ -3,8 +3,10 @@ package com.checkmarx.integrations.datastore.controllers;
 import com.checkmarx.integrations.datastore.controllers.exceptions.RepoNotFoundException;
 import com.checkmarx.integrations.datastore.dto.RepoDto;
 import com.checkmarx.integrations.datastore.dto.SCMRepoDto;
+import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.models.ScmRepo;
+import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.RepoService;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.utils.ErrorConstsMessages;
@@ -28,6 +30,7 @@ public class RepoController {
 
     private final RepoService repoService;
     private final ScmService scmService;
+    private final OrgService orgService;
 
     @Operation(summary = "Gets a SCM org repos")
     @GetMapping
@@ -60,9 +63,10 @@ public class RepoController {
     @PutMapping
     public ResponseEntity updateScmRepo(@RequestBody SCMRepoDto scmRepoDto) {
         log.trace("updateScmRepo: scmRepoDto={}", scmRepoDto.toString());
-        ScmOrg scmOrgByName = scmService.getScmOrgByScmUrlAndOrgIdentity(scmRepoDto.getScmUrl(), scmRepoDto.getOrgIdentity());
-        log.trace("updateScmRepo: scmOrgByName={}", scmOrgByName);
-        repoService.updateScmOrgRepos(scmOrgByName, scmRepoDto.getRepoList());
+        Scm scm = scmService.getScmByScmUrl(scmRepoDto.getScmUrl());
+        ScmOrg scmOrg = orgService.createOrGetScmOrgByOrgIdentity(scm, scmRepoDto.getOrgIdentity());
+        log.trace("updateScmRepo: scmOrgByName={}", scmOrg);
+        repoService.updateScmOrgRepos(scmOrg, scmRepoDto.getRepoList());
 
         return ResponseEntity.ok().build();
     }

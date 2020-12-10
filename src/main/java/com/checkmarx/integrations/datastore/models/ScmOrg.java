@@ -42,6 +42,9 @@ public class ScmOrg {
     @Column(name = "org_identity")
     private String orgIdentity;
 
+    @Column(name = "org_name")
+    private String orgName;
+
     @Column(name = "cx_flow_url")
     private String cxFlowUrl;
 

@@ -1,8 +1,15 @@
 Feature: Test Scm Org Controller endpoints
 
-  Scenario: Store new Scm org details and validate response status
-    When storeScmOrg POST endpoint is getting called with "githubTest.com" as scm-url and with "orgNameTest" as org identity
-    Then "storeScmOrg" response status is 200
+  Scenario: Validate SCMOrg DTO is getting back successfully from database without the token details
+    When storeScmOrgToken endpoint is getting called with partial SCMOrg DTO as a list parameters
+    And getScmOrgByName endpoint is getting called with "githubTest.com" as scm-url and "orgNameTest" as org name
+    Then getScmOrgByName response contains scmUrl field set to "githubTest.com"
+    And response contains orgName field set to "orgNameTest"
+
+  Scenario: Validate SCMOrg DTO is getting back successfully from database also with token details
+    When storeScmOrgToken endpoint is getting called with full SCMOrg DTO as a list parameters
+    And getScmOrgByName endpoint is getting called with "githubTest.com" as scm-url and "orgNameTest" as org name
+    Then getScmOrgByName response contains a full SCMOrg details
 
   Scenario: Validate new scm org entity details are getting back successfully from database
     Given Scm org with "githubTest.com" as scm-url and "orgNameTest" as org identity is stored in database

@@ -24,4 +24,8 @@ public class SCMOrgDto {
     private String scmUrl;
     @JsonProperty("org_identity")
     private String orgIdentity;
+    @JsonProperty("org_name")
+    private String orgName;
+    private String accessToken;
+    private String tokenType;
 }

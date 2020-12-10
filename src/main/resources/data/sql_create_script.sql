@@ -6,9 +6,9 @@ drop table scms;
 CREATE TABLE scms
 (
 	id				    SERIAL PRIMARY KEY,
-	base_url		  varchar(50),
-	client_id		  varchar(50),
-	client_secret	varchar(50),
+	base_url		  varchar(250),
+	client_id		  varchar(250),
+	client_secret	varchar(250),
 	unique (base_url)
 
 );
@@ -17,7 +17,8 @@ CREATE TABLE scm_orgs
 (
 	id				      SERIAL PRIMARY KEY,
 	scm_id			    int,
-	org_identity		varchar(50),
+	org_identity		varchar(250),
+	org_name		    varchar(250),
 	cx_flow_url 	  varchar(50),
   cx_flow_config 	varchar(1000),
 	cx_go_token 	  varchar(100),

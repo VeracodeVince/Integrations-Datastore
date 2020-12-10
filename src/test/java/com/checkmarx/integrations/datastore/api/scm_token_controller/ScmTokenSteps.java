@@ -4,6 +4,7 @@ import com.checkmarx.integrations.datastore.dto.SCMAccessTokenDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
+import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.services.TokenService;
 import io.cucumber.java.en.And;
@@ -43,6 +44,9 @@ public class ScmTokenSteps {
 
     @Autowired
     private ScmService scmService;
+
+    @Autowired
+    private OrgService orgService;
 
     @Autowired
     private TokenService tokenService;
@@ -152,7 +156,8 @@ public class ScmTokenSteps {
         scmRepository.saveAndFlush(Scm.builder()
                                            .baseUrl(scmUrl)
                                            .build());
-        ScmOrg scmOrgByName = scmService.getScmOrgByScmUrlAndOrgIdentity(scmUrl, orgIdentity);
-        tokenService.updateTokenIfExists(scmOrgByName, tokenType, accessToken);
+        Scm scm = scmService.getScmByScmUrl(scmUrl);
+        ScmOrg scmOrg = orgService.createOrGetScmOrgByOrgIdentity(scm, orgIdentity);
+        tokenService.updateTokenIfExists(scmOrg, tokenType, accessToken);
     }
 }

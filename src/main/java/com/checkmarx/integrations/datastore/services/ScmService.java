@@ -2,7 +2,6 @@ package com.checkmarx.integrations.datastore.services;
 
 import com.checkmarx.integrations.datastore.controllers.exceptions.ScmNotFoundException;
 import com.checkmarx.integrations.datastore.models.Scm;
-import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.SCM
 public class ScmService {
 
     private final ScmRepository scmRepository;
-    private final OrgService orgService;
 
 	public void deleteScm(Long id) {
 		scmRepository.deleteById(id);
@@ -40,10 +38,9 @@ public class ScmService {
 		scmRepository.save(scmToUpdate);
 	}
 
-	public ScmOrg getScmOrgByScmUrlAndOrgIdentity(String scmUrl, String orgIdentity) {
-		Scm scmByBaseUrl = Optional.ofNullable(scmRepository.getScmByBaseUrl(scmUrl))
-				.orElseThrow(() -> new ScmNotFoundException(String.format(SCM_NOT_FOUND, scmUrl)));
-		return orgService.createOrGetScmOrgByOrgIdentity(scmByBaseUrl, orgIdentity);
+	public Scm getScmByScmUrl(String scmUrl) {
+		return Optional.ofNullable(scmRepository.getScmByBaseUrl(scmUrl))
+					.orElseThrow(() -> new ScmNotFoundException(String.format(SCM_NOT_FOUND, scmUrl)));
 	}
 
 	private Scm createOrGetScmByBaseUrl(String baseUrl) {

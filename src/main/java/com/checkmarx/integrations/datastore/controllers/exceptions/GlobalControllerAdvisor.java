@@ -73,7 +73,7 @@ public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log.error("Malformed JSON request: ", ex.getMessage());
+        log.error("Malformed JSON request: ", ex.getCause());
         GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
                 .message(ex.getMessage())
                 .localDateTime(LocalDateTime.now())

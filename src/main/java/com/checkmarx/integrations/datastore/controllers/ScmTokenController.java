@@ -2,6 +2,7 @@ package com.checkmarx.integrations.datastore.controllers;
 
 import com.checkmarx.integrations.datastore.controllers.exceptions.TokenNotFoundException;
 import com.checkmarx.integrations.datastore.dto.SCMAccessTokenDto;
+import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.services.OrgService;
@@ -58,9 +59,10 @@ public class ScmTokenController {
     public ResponseEntity storeScmAccessToken(@RequestBody List<SCMAccessTokenDto> scmAccessTokenDtoList) {
         log.trace("storeScmAccessToken: scmAccessTokenDtoList={}", scmAccessTokenDtoList);
         scmAccessTokenDtoList.forEach(scmAccessTokenDto -> {
-            ScmOrg scmOrgByName = scmService.getScmOrgByScmUrlAndOrgIdentity(scmAccessTokenDto.getScmUrl(), scmAccessTokenDto.getOrgIdentity());
-            log.trace("storeScmAccessToken: scmOrgByName={}", scmOrgByName);
-            tokenService.updateTokenIfExists(scmOrgByName, scmAccessTokenDto.getTokenType(), scmAccessTokenDto.getAccessToken());
+            Scm scm = scmService.getScmByScmUrl(scmAccessTokenDto.getScmUrl());
+            ScmOrg scmOrg = orgService.createOrGetScmOrgByOrgIdentity(scm, scmAccessTokenDto.getOrgIdentity());
+            log.trace("storeScmAccessToken: scmOrgByName={}", scmOrg);
+            tokenService.updateTokenIfExists(scmOrg, scmAccessTokenDto.getTokenType(), scmAccessTokenDto.getAccessToken());
         });
 
         return ResponseEntity.ok().build();
