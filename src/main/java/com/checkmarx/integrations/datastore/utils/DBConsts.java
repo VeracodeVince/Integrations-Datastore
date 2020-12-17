@@ -5,5 +5,5 @@ public class DBConsts {
     private DBConsts() {
     }
 
-    public static final int TOKEN_MAX_LENGTH = 2500;
+    public static final int MAX_LENGTH = 2500;
 }

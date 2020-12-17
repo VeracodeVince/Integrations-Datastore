@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+import static com.checkmarx.integrations.datastore.utils.DBConsts.MAX_LENGTH;
+
 @Getter
 @Setter
 @Builder
@@ -26,10 +28,10 @@ public class ScmRepo {
     @JoinColumn(name = "org_id")
     private ScmOrg scmOrg;
 
-    @Column(name = "repo_identity")
+    @Column(name = "repo_identity", length = MAX_LENGTH)
     private String repoIdentity;
 
-    @Column(name = "webhook_id")
+    @Column(name = "webhook_id", length = MAX_LENGTH)
     private String webhookId;
 
     @Column(name = "is_webhook_configured")

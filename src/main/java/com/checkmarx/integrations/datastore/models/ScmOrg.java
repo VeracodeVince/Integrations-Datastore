@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.checkmarx.integrations.datastore.utils.DBConsts.TOKEN_MAX_LENGTH;
+import static com.checkmarx.integrations.datastore.utils.DBConsts.MAX_LENGTH;
 
 @Getter
 @Setter
@@ -51,7 +51,7 @@ public class ScmOrg {
     @Column(name = "cx_flow_config")
     private String cxFlowConfig;
 
-    @Column(name = "cx_go_token", length = TOKEN_MAX_LENGTH)
+    @Column(name = "cx_go_token", length = MAX_LENGTH)
     private String cxGoToken;
 
     private String team;
