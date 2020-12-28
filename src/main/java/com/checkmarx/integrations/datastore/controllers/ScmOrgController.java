@@ -39,13 +39,6 @@ public class ScmOrgController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Gets SCM org by name")
-    @GetMapping
-    public SCMOrgDto getScmOrgByName(@RequestParam String scmBaseUrl, @RequestParam String orgName) {
-        log.trace("getScmOrgByName: scmBaseUrl={}, orgName={}", scmBaseUrl, orgName);
-        return orgService.getOrgByName(scmBaseUrl, orgName);
-    }
-
     @Operation(summary = "Gets SCM org with Cx-Flow properties")
     @GetMapping(value = "/properties")
     @ApiResponse(responseCode = "200", description = "Cx-Flow properties found", content = @Content)

@@ -37,11 +37,8 @@ public class ScmOrgSteps {
     private static final String CX_FLOW_URL = "Cxflow.com";
     private static final String CX_GO_TOKEN = "cx-go-token-123";
     private static final String CX_TEAM = "cx-team-test";
-    private static final String ACCESS_TOKEN = "token-1234";
-    private static final String TOKEN_TYPE = "access-token";
 
     private ResponseEntity<CxFlowPropertiesDto> getCxFlowPropertiesResponse;
-    private ResponseEntity<SCMOrgDto> getScmOrgByNameResponse;
     private CxFlowPropertiesDto cxFlowPropertiesDto;
     private String orgsPath;
     private String orgsPropertiesPath;
@@ -55,79 +52,10 @@ public class ScmOrgSteps {
         orgsPropertiesPath = String.format("http://localhost:%s/orgs/properties", port);
     }
 
-    @When("storeScmOrgToken endpoint is getting called with partial SCMOrg DTO as a list parameters")
-    public void storeScmOrgTokenEndPointIsGettingCalled() {
-        List<SCMOrgDto> scmOrgDtoList = new ArrayList<>();
-        SCMOrgDto scmOrgDto = SCMOrgDto.builder()
-                .scmUrl(SCM_URL)
-                .orgName(ORG_IDENTITY)
-                .build();
-        scmOrgDtoList.add(scmOrgDto);
-
-        storeScmOrgTokenList(scmOrgDtoList);
-    }
-
-    @And("getScmOrgByName endpoint is getting called with {string} as scm-url and {string} as org name")
-    public void getScmOrgByNameEndPointIsGettingCalled(String scmUrl, String scmName) {
-        URI uri = getScmOrgByNameEndPointUri(scmUrl, scmName);
-        getScmOrgByNameResponse = restTemplate.getForEntity(uri, SCMOrgDto.class);
-    }
-
-    @Then("getScmOrgByName response contains scmUrl field set to {string}")
-    public void validateGetScmOrgNameScmUrlParameter(String scmUrl) {
-        SCMOrgDto scmOrgDto = getScmOrgByNameResponse.getBody();
-        Assert.assertEquals("Scm URL value by GET ScmOrgName endpoint is not as expected",
-                scmUrl, Objects.requireNonNull(scmOrgDto).getScmUrl());
-    }
-
-    @And("response contains orgName field set to {string}")
-    public void validateGetScmOrgNameOrgNameParameter(String orgName) {
-        SCMOrgDto scmOrgDto = getScmOrgByNameResponse.getBody();
-        Assert.assertEquals("Org name value by GET ScmOrgName endpoint is not as expected",
-                orgName, Objects.requireNonNull(scmOrgDto).getOrgName());
-    }
-
-    @When("storeScmOrgToken endpoint is getting called with full SCMOrg DTO as a list parameters")
-    public void storeScmOrgTokenEndPointIsGettingCalledWithToken() {
-        List<SCMOrgDto> scmOrgDtoList = new ArrayList<>();
-        SCMOrgDto scmOrgDto = SCMOrgDto.builder()
-                .scmUrl(SCM_URL)
-                .orgName(ORG_IDENTITY)
-                .orgIdentity(ORG_IDENTITY)
-                .accessToken(ACCESS_TOKEN)
-                .tokenType(TOKEN_TYPE)
-                .build();
-        scmOrgDtoList.add(scmOrgDto);
-
-        storeScmOrgTokenList(scmOrgDtoList);
-    }
-
-    @Then("getScmOrgByName response contains a full SCMOrg details")
-    public void validateGetScmOrgNameWithToken() {
-        SCMOrgDto scmOrgDto = getScmOrgByNameResponse.getBody();
-        Assert.assertEquals("Scm URL value by GET ScmOrgName endpoint is not as expected",
-                SCM_URL, Objects.requireNonNull(scmOrgDto).getScmUrl());
-
-        Assert.assertEquals("Org name value by GET ScmOrgName endpoint is not as expected",
-                ORG_IDENTITY, Objects.requireNonNull(scmOrgDto).getOrgName());
-
-        Assert.assertEquals("Access token value by GET ScmOrgName endpoint is not as expected",
-                ACCESS_TOKEN, Objects.requireNonNull(scmOrgDto).getAccessToken());
-
-        Assert.assertEquals("Token type value by GET ScmOrgName endpoint is not as expected",
-                TOKEN_TYPE, Objects.requireNonNull(scmOrgDto).getTokenType());
-    }
-
-    @Then("{string} response status is {int}")
-    public void validateResponseCode(String endPoint, int expectedStatusCode) {
-        int actualStatusCode = 0;
-
-        switch (endPoint) {
-            case "getCxFlowProperties":
-                actualStatusCode = getCxFlowPropertiesResponse.getStatusCodeValue();
-                break;
-        }
-        Assert.assertEquals(endPoint + " response status code is not as expected",
+    @Then("the response status is {int}")
+    public void validateResponseCode(int expectedStatusCode) {
+        int actualStatusCode =  getCxFlowPropertiesResponse.getStatusCodeValue();
+        Assert.assertEquals("Response status code is not as expected",
                 expectedStatusCode, actualStatusCode);
     }
 
@@ -205,27 +133,12 @@ public class ScmOrgSteps {
                 .toUri();
     }
 
-    private URI getScmOrgByNameEndPointUri(String scmUrl, String orgName) {
-        return UriComponentsBuilder.fromUriString(orgsPath)
-                .queryParam("scmBaseUrl", scmUrl)
-                .queryParam("orgName", orgName)
-                .build()
-                .toUri();
-    }
-
     private void createScmInDb() {
         String path = String.format("http://localhost:%s/scms/storeScm", port);
         SCMDto scmDto = SCMDto.builder()
                 .baseUrl(SCM_URL)
                 .build();
         restTemplate.postForEntity(path, scmDto, ResponseEntity.class);
-    }
-
-    private SCMOrgDto getScmOrgDto(String scmUrl, String orgIdentity) {
-        return SCMOrgDto.builder()
-                .scmUrl(scmUrl)
-                .orgIdentity(orgIdentity)
-                .build();
     }
 
     private void storeScmOrgTokenList(List<SCMOrgDto> scmOrgDtoList) {

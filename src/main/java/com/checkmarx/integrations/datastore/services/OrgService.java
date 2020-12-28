@@ -1,19 +1,15 @@
 package com.checkmarx.integrations.datastore.services;
 
-import com.checkmarx.integrations.datastore.controllers.exceptions.ScmOrgNotFoundException;
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
-import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.BASE_URL_WITH_ORG_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -26,20 +22,6 @@ public class OrgService {
 
     public ScmOrg getOrgBy(String scmBaseUrl, String orgIdentity) {
         return scmOrgRepository.getScmOrg(orgIdentity, scmBaseUrl);
-    }
-
-    public SCMOrgDto getOrgByName(String scmBaseUrl, String orgName) {
-        ScmOrg scmOrg = Optional.ofNullable(scmOrgRepository.getScmOrgByName(scmBaseUrl, orgName))
-                .orElseThrow(() -> new ScmOrgNotFoundException(String.format(BASE_URL_WITH_ORG_NOT_FOUND, scmBaseUrl, orgName)));
-        Token tokenByOrgIdentity = tokenService.getTokenByOrgIdentity(scmOrg.getOrgIdentity());
-
-        SCMOrgDto scmOrgDto;
-        if (Optional.ofNullable(tokenByOrgIdentity).isPresent()) {
-            scmOrgDto = getFullScmOrgDto(scmOrg, tokenByOrgIdentity);
-        } else {
-            scmOrgDto = getScmOrgDtoWithoutToken(scmOrg);
-        }
-        return scmOrgDto;
     }
 
     public void deleteScmOrgById(Long id) {
@@ -55,7 +37,6 @@ public class OrgService {
     public void createScmOrgByScmOrgDto(SCMOrgDto scmOrgDto) {
         Scm scmByScmUrl = scmService.getScmByScmUrl(scmOrgDto.getScmUrl());
         ScmOrg scmOrg = createOrGetScmOrgByOrgIdentity(scmByScmUrl, scmOrgDto.getOrgIdentity());
-        Optional.ofNullable(scmOrgDto.getOrgName()).ifPresent(scmOrg::setOrgName);
         Optional.ofNullable(scmOrgDto.getOrgIdentity()).ifPresent(scmOrg::setOrgIdentity);
         scmOrgRepository.save(scmOrg);
 
@@ -76,24 +57,6 @@ public class OrgService {
                     .build();
             return createScmOrg(scmOrg);
         }
-    }
-
-    private SCMOrgDto getFullScmOrgDto(ScmOrg scmOrg, Token token) {
-        return SCMOrgDto.builder()
-                .scmUrl(scmOrg.getScm().getBaseUrl())
-                .orgIdentity(scmOrg.getOrgIdentity())
-                .orgName(scmOrg.getOrgName())
-                .accessToken(token.getAccessToken())
-                .tokenType(token.getType())
-                .build();
-    }
-
-    private SCMOrgDto getScmOrgDtoWithoutToken(ScmOrg scmOrg) {
-        return SCMOrgDto.builder()
-                .scmUrl(scmOrg.getScm().getBaseUrl())
-                .orgIdentity(scmOrg.getOrgIdentity())
-                .orgName(scmOrg.getOrgName())
-                .build();
     }
 
     private ScmOrg createScmOrg(ScmOrg scmOrg) {
