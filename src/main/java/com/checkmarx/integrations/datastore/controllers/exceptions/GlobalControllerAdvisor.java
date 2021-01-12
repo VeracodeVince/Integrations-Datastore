@@ -50,7 +50,8 @@ public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(RepoNotFoundException.class)
-    public ResponseEntity<Object> handleReponNotFoundException(RepoNotFoundException e) {
+    public ResponseEntity<Object> handleRepoNotFoundException(RepoNotFoundException e) {
+        log.error("Repo not found.", e);
 
         GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
                 .message(e.getMessage())

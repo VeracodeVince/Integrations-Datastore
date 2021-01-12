@@ -9,5 +9,5 @@ import org.junit.runner.RunWith;
         features = "src/test/resources/cucumber/features/scm-token-api.feature",
         plugin = { "pretty", "html:target/cucumber-html-report","json:target/cucumber.json" },
         extraGlue = "com.checkmarx.integrations.datastore.api.shared")
-public class ScmTokenTest {
+public class ScmTokenTestToFix {
 }

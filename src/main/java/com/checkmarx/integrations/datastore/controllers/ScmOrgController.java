@@ -2,7 +2,6 @@ package com.checkmarx.integrations.datastore.controllers;
 
 import com.checkmarx.integrations.datastore.controllers.exceptions.ScmOrgNotFoundException;
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
-import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.services.OrgService;
@@ -13,31 +12,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
-import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.BASE_URL_WITH_ORG_NOT_FOUND;
+import static com.checkmarx.integrations.datastore.utils.ErrorMessages.BASE_URL_WITH_ORG_NOT_FOUND;
 
 @RestController
 @RequestMapping("/orgs")
 @RequiredArgsConstructor
 @Slf4j
 public class ScmOrgController {
-
     private final OrgService orgService;
     private final ScmService scmService;
-
-    @Operation(summary = "Stores or updates SCM org token")
-    @PutMapping
-    public ResponseEntity storeScmOrgToken(@RequestBody final List<SCMOrgDto> scmOrgDtoList) {
-        log.trace("storeScmOrgToken: scmOrgDtoList={}", scmOrgDtoList);
-        scmOrgDtoList.forEach(orgService::createScmOrgByScmOrgDto);
-
-        return ResponseEntity.ok().build();
-    }
 
     @Operation(summary = "Gets SCM org with Cx-Flow properties")
     @GetMapping(value = "/properties")

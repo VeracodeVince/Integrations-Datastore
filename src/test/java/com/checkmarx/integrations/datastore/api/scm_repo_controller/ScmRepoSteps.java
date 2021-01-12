@@ -2,7 +2,7 @@ package com.checkmarx.integrations.datastore.api.scm_repo_controller;
 
 import com.checkmarx.integrations.datastore.dto.RepoDto;
 import com.checkmarx.integrations.datastore.dto.SCMDto;
-import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
+import com.checkmarx.integrations.datastore.dto.SCMOrgLegacyDto;
 import com.checkmarx.integrations.datastore.dto.SCMRepoDto;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -139,12 +139,12 @@ public class ScmRepoSteps {
 
     private void createScmOrgInDb() {
         String path = String.format("http://localhost:%s/orgs", port);
-        SCMOrgDto scmOrgDto = SCMOrgDto.builder()
+        SCMOrgLegacyDto org = SCMOrgLegacyDto.builder()
                 .scmUrl(SCM_URL)
                 .orgIdentity(INVALID_ORG_IDENTITY)
                 .build();
 
-        restTemplate.postForEntity(path, scmOrgDto, ResponseEntity.class);
+        restTemplate.postForEntity(path, org, ResponseEntity.class);
     }
 
     private void createScmInDb() {

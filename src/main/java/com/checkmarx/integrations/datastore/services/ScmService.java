@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.checkmarx.integrations.datastore.utils.ErrorConstsMessages.SCM_NOT_FOUND;
+import static com.checkmarx.integrations.datastore.utils.ErrorMessages.SCM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -27,15 +27,15 @@ public class ScmService {
 		return scmRepository.findAll();
 	}
 
-	public Scm getScmByBaseUrl(String baseUrl) {
-		return scmRepository.getScmByBaseUrl(baseUrl);
-	}
-
 	public void createOrUpdateScm(Scm scm) {
 		Scm scmToUpdate = createOrGetScmByBaseUrl(scm.getBaseUrl());
 		scmToUpdate.setClientId(scm.getClientId());
 		scmToUpdate.setClientSecret(scm.getClientSecret());
 		scmRepository.save(scmToUpdate);
+	}
+
+	public Scm tryGetScmByBaseUrl(String baseUrl) {
+		return scmRepository.getScmByBaseUrl(baseUrl);
 	}
 
 	public Scm getScmByScmUrl(String scmUrl) {
@@ -44,7 +44,7 @@ public class ScmService {
 	}
 
 	private Scm createOrGetScmByBaseUrl(String baseUrl) {
-		Scm scmByBaseUrl = getScmByBaseUrl(baseUrl);
+		Scm scmByBaseUrl = tryGetScmByBaseUrl(baseUrl);
 
 		if (scmByBaseUrl != null) {
 			log.trace("createOrGetScmByBaseUrl: scmByBaseUrl exists:{}", scmByBaseUrl);

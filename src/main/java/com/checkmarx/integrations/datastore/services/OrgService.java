@@ -4,11 +4,14 @@ import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
+import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Optional;
 
 @Service
@@ -16,9 +19,10 @@ import java.util.Optional;
 @Slf4j
 public class OrgService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final ScmOrgRepository scmOrgRepository;
-    private final ScmService scmService;
-    private final TokenService tokenService;
 
     public ScmOrg getOrgBy(String scmBaseUrl, String orgIdentity) {
         return scmOrgRepository.getScmOrg(orgIdentity, scmBaseUrl);
@@ -32,15 +36,6 @@ public class OrgService {
         createOrUpdateCxFlowUrl(scmOrg, cxFlowPropertiesDto.getCxFlowUrl());
         createOrUpdateCxGoToken(scmOrg, cxFlowPropertiesDto.getCxGoToken());
         createOrUpdateCxTeam(scmOrg, cxFlowPropertiesDto.getCxTeam());
-    }
-
-    public void createScmOrgByScmOrgDto(SCMOrgDto scmOrgDto) {
-        Scm scmByScmUrl = scmService.getScmByScmUrl(scmOrgDto.getScmUrl());
-        ScmOrg scmOrg = createOrGetScmOrgByOrgIdentity(scmByScmUrl, scmOrgDto.getOrgIdentity());
-        Optional.ofNullable(scmOrgDto.getOrgIdentity()).ifPresent(scmOrg::setOrgIdentity);
-        scmOrgRepository.save(scmOrg);
-
-        tokenService.updateTokenIfExists(scmOrg, scmOrgDto.getTokenType(), scmOrgDto.getAccessToken());
     }
 
     public ScmOrg createOrGetScmOrgByOrgIdentity(Scm scm, String orgIdentity) {
@@ -97,5 +92,21 @@ public class OrgService {
                 scmOrgRepository.saveAndFlush(scmOrg);
             }
         });
+    }
+
+    public void updateTokenId(ScmOrg org, long newTokenId) {
+        Token tokenRef = entityManager.getReference(Token.class, newTokenId);
+        org.setAccessToken(tokenRef);
+        scmOrgRepository.saveAndFlush(org);
+    }
+
+    public void createOrg(SCMOrgDto org, Scm scm) {
+        Token tokenRef = entityManager.getReference(Token.class, org.getTokenId());
+        ScmOrg orgForStorage = ScmOrg.builder()
+                .accessToken(tokenRef)
+                .scm(scm)
+                .orgIdentity(org.getOrgIdentity())
+                .build();
+        scmOrgRepository.saveAndFlush(orgForStorage);
     }
 }

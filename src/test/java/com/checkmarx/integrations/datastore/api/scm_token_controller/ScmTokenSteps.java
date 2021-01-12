@@ -1,16 +1,13 @@
 package com.checkmarx.integrations.datastore.api.scm_token_controller;
 
+import com.checkmarx.integrations.datastore.dto.AccessTokenUpdateDto;
 import com.checkmarx.integrations.datastore.dto.SCMAccessTokenDto;
 import com.checkmarx.integrations.datastore.models.Scm;
-import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.ScmService;
 import com.checkmarx.integrations.datastore.services.TokenService;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
+import io.cucumber.java.en.*;
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -145,19 +142,19 @@ public class ScmTokenSteps {
         return scmAccessTokenDtos;
     }
 
-    @Given("data base contains scm {string} with {string} and {string} and {string}")
-    public void dataBaseContainsScmWithAndAnd(String scmUrl, String orgIdentity, String accessToken,
-                                              String tokenType) {
-        prepareDataBase(scmUrl, orgIdentity, accessToken, tokenType);
+    @Given("data base contains scm {string} with {string} and {string}")
+    public void dataBaseContainsScmWithAndAnd(String scmUrl, String orgIdentity, String accessToken) {
+        prepareDataBase(scmUrl, orgIdentity, accessToken);
     }
 
-    private void prepareDataBase(String scmUrl, String orgIdentity, String accessToken,
-                                 String tokenType) {
+    private void prepareDataBase(String scmUrl, String orgIdentity, String accessToken) {
         scmRepository.saveAndFlush(Scm.builder()
                                            .baseUrl(scmUrl)
                                            .build());
         Scm scm = scmService.getScmByScmUrl(scmUrl);
-        ScmOrg scmOrg = orgService.createOrGetScmOrgByOrgIdentity(scm, orgIdentity);
-        tokenService.updateTokenIfExists(scmOrg, tokenType, accessToken);
+        orgService.createOrGetScmOrgByOrgIdentity(scm, orgIdentity);
+        tokenService.createTokenInfoIfDoesntExist(AccessTokenUpdateDto.builder()
+                .accessToken(accessToken)
+                .build());
     }
 }

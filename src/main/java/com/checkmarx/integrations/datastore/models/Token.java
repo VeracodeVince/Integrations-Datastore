@@ -16,20 +16,12 @@ import static com.checkmarx.integrations.datastore.utils.DBConsts.MAX_LENGTH;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "scm_tokens", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"org_id", "type"})})
+@Table(name = "scm_tokens")
 public class Token {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "org_id")
-    private ScmOrg scmOrg;
-
-    private String type;
-
-    @Column(name = "token", length = MAX_LENGTH)
+    @Column(name = "token", length = MAX_LENGTH, unique = true)
     private String accessToken;
 }

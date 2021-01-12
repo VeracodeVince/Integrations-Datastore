@@ -2,7 +2,7 @@ package com.checkmarx.integrations.datastore.api.scm_org_controller;
 
 import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
 import com.checkmarx.integrations.datastore.dto.SCMDto;
-import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
+import com.checkmarx.integrations.datastore.dto.SCMOrgLegacyDto;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -61,14 +61,14 @@ public class ScmOrgSteps {
 
     @Given("Scm org with {string} as scm-url and {string} as org identity is stored in database")
     public void initData(String scmUrl, String orgIdentity) {
-        List<SCMOrgDto> scmOrgDtoList = new ArrayList<>();
-        SCMOrgDto scmOrgDto = SCMOrgDto.builder()
+        List<SCMOrgLegacyDto> orgs = new ArrayList<>();
+        SCMOrgLegacyDto org = SCMOrgLegacyDto.builder()
                 .scmUrl(scmUrl)
                 .orgIdentity(orgIdentity)
                 .build();
-        scmOrgDtoList.add(scmOrgDto);
+        orgs.add(org);
 
-        storeScmOrgTokenList(scmOrgDtoList);
+        storeScmOrgTokenList(orgs);
     }
 
     @When("getCxFlowProperties endpoint is getting called with {string} as scm-url and {string} as org identity")
@@ -141,8 +141,8 @@ public class ScmOrgSteps {
         restTemplate.postForEntity(path, scmDto, ResponseEntity.class);
     }
 
-    private void storeScmOrgTokenList(List<SCMOrgDto> scmOrgDtoList) {
+    private void storeScmOrgTokenList(List<SCMOrgLegacyDto> orgs) {
         createScmInDb();
-        restTemplate.put(orgsPath, scmOrgDtoList, ResponseEntity.class);
+        restTemplate.put(orgsPath, orgs, ResponseEntity.class);
     }
 }

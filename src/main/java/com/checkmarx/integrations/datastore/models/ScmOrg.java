@@ -35,10 +35,6 @@ public class ScmOrg {
     @JsonIgnore
     private List<ScmRepo> scmRepoList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "scmOrg", cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private List<Token> tokenList = new ArrayList<>();
-
     @Column(name = "org_identity")
     private String orgIdentity;
 
@@ -50,6 +46,11 @@ public class ScmOrg {
 
     @Column(name = "cx_go_token", length = MAX_LENGTH)
     private String cxGoToken;
+
+    @ManyToOne
+    @JoinColumn(name = "token_id")
+    @JsonIgnore
+    private Token accessToken;
 
     private String team;
 }
