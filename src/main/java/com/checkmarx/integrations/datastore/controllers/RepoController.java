@@ -1,15 +1,12 @@
 package com.checkmarx.integrations.datastore.controllers;
 
-import com.checkmarx.integrations.datastore.controllers.exceptions.RepoNotFoundException;
+import com.checkmarx.integrations.datastore.controllers.exceptions.EntityNotFoundException;
 import com.checkmarx.integrations.datastore.dto.RepoDto;
 import com.checkmarx.integrations.datastore.dto.RepoUpdateDto;
-import com.checkmarx.integrations.datastore.dto.SCMRepoDto;
-import com.checkmarx.integrations.datastore.models.Scm;
-import com.checkmarx.integrations.datastore.models.ScmOrg;
+import com.checkmarx.integrations.datastore.dto.ReposUpdateDto;
 import com.checkmarx.integrations.datastore.models.ScmRepo;
-import com.checkmarx.integrations.datastore.services.OrgService;
 import com.checkmarx.integrations.datastore.services.RepoService;
-import com.checkmarx.integrations.datastore.services.ScmService;
+import com.checkmarx.integrations.datastore.services.StorageService;
 import com.checkmarx.integrations.datastore.utils.ErrorMessages;
 import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,31 +24,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class RepoController {
-
     private final RepoService repoService;
-    private final ScmService scmService;
-    private final OrgService orgService;
+    private final StorageService storageService;
 
-    @Operation(summary = "Gets a SCM org repos")
-    @GetMapping("/repos")
-    public List<RepoDto> getScmReposByOrgIdentity(@RequestParam String scmBaseUrl, @RequestParam String orgIdentity) {
-        log.trace("getScmReposByOrgIdentity: scmBaseUrl={}, orgIdentity={}", scmBaseUrl, orgIdentity);
-        List<ScmRepo> scmRepoList = repoService.getScmReposByOrgIdentity(scmBaseUrl, orgIdentity);
+    @Operation(summary = "Gets organization repositories.")
+    @GetMapping("scms/{scmId}/orgs/{orgIdentity}/repos")
+    public List<RepoDto> getScmReposByOrgIdentity(@PathVariable long scmId, @PathVariable String orgIdentity) {
+        log.trace("getScmReposByOrgIdentity: scmId={}, orgIdentity={}", scmId, orgIdentity);
+        List<ScmRepo> repos = repoService.getScmReposByOrgIdentity(scmId, orgIdentity);
 
-        List<RepoDto> repoDtoList = ObjectMapperUtil.mapList(scmRepoList, RepoDto.class);
+        List<RepoDto> repoDtoList = ObjectMapperUtil.mapList(repos, RepoDto.class);
         log.trace("getScmReposByOrgIdentity: repoDtoList:{}", repoDtoList);
 
         return repoDtoList;
     }
 
-    @Operation(summary = "Gets SCM repo by repo identity")
-    @GetMapping(value = "/repos/{repoIdentity}")
-    @ApiResponse(responseCode = "200", description = "SCM Repo found", content = @Content)
-    @ApiResponse(responseCode = "404", description = "SCM Repo was not found", content = @Content)
-    public ResponseEntity<RepoDto> getScmRepo(@RequestParam String scmBaseUrl, @RequestParam String orgIdentity, @PathVariable String repoIdentity) {
-        log.trace("getScmRepo: scmBaseUrl={}, orgIdentity={}, repoIdentity={}", scmBaseUrl, orgIdentity, repoIdentity);
-        ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmBaseUrl, orgIdentity, repoIdentity))
-                .orElseThrow(() -> new RepoNotFoundException(String.format(ErrorMessages.REPO_NOT_FOUND, repoIdentity)));
+    @Operation(summary = "Gets SCM repo by repo identity.")
+    @GetMapping(value = "scms/{scmId}/orgs/{orgIdentity}/repos/{repoIdentity}")
+    @ApiResponse(responseCode = "200", description = "SCM repo found", content = @Content)
+    @ApiResponse(responseCode = "404", description = "SCM repo was not found", content = @Content)
+    public ResponseEntity<RepoDto> getScmRepo(@PathVariable long scmId,
+                                              @PathVariable String orgIdentity,
+                                              @PathVariable String repoIdentity) {
+        log.trace("getScmRepo: scmId={}, orgIdentity={}, repoIdentity={}", scmId, orgIdentity, repoIdentity);
+        ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmId, orgIdentity, repoIdentity))
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ErrorMessages.REPO_NOT_FOUND, repoIdentity)));
 
         RepoDto repoDto = ObjectMapperUtil.map(scmRepo, RepoDto.class);
         log.trace("getScmRepo: repoDto:{}", repoDto);
@@ -59,27 +56,27 @@ public class RepoController {
         return ResponseEntity.ok(repoDto);
     }
 
-    @Operation(summary = "Stores or updates SCM repos")
+    @Operation(summary = "Imports an organization together with its repositories.",
+            description = "If an organization doesn't exist, it is created. For each of the repos in request, " +
+                    "if a repo with the same identity doesn't exist, it is created.")
     @PutMapping("/repos")
-    public ResponseEntity<Object> updateScmRepos(@RequestBody SCMRepoDto scmRepoDto) {
-        log.trace("updateScmRepos: scmRepoDto={}", scmRepoDto.toString());
-        Scm scm = scmService.getScmByScmUrl(scmRepoDto.getScmUrl());
-        ScmOrg scmOrg = orgService.createOrGetScmOrgByOrgIdentity(scm, scmRepoDto.getOrgIdentity());
-        log.trace("updateScmRepos: scmOrgByName={}", scmOrg);
-        repoService.updateScmOrgRepos(scmOrg, scmRepoDto.getRepoList());
+    public ResponseEntity<Void> importOrgAndRepos(@RequestBody ReposUpdateDto updateRequest) {
+        log.trace("importOrgAndRepos: updateRequest={}", updateRequest);
+        storageService.importOrgAndRepos(updateRequest);
 
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("scms/{scmBaseUrl}/orgs/{orgIdentity}/repos/{repoIdentity}")
-    public ResponseEntity<Object> updateRepo(@PathVariable String scmBaseUrl,
+    @Operation(summary = "Updates an SCM repository.")
+    @PutMapping("scms/{scmId}/orgs/{orgIdentity}/repos/{repoIdentity}")
+    public ResponseEntity<Void> updateRepo(@PathVariable long scmId,
                                              @PathVariable String orgIdentity,
                                              @PathVariable String repoIdentity,
                                              @RequestBody RepoUpdateDto repo) {
-        log.trace("updateRepo: scmBaseUrl: {}, orgIdentity: {}, repoIdentity: {}, new property values: {}",
-                scmBaseUrl, orgIdentity, repoIdentity, repo);
+        log.trace("updateRepo: scmId: {}, orgIdentity: {}, repoIdentity: {}, new property values: {}",
+                scmId, orgIdentity, repoIdentity, repo);
 
-        repoService.updateRepo(scmBaseUrl, orgIdentity, repoIdentity, repo);
+        repoService.updateRepo(scmId, orgIdentity, repoIdentity, repo);
 
         return ResponseEntity.noContent().build();
     }

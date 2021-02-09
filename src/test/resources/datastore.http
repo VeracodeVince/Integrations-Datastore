@@ -1,0 +1,116 @@
+###-----------------------------  SCMs  ------------------------------
+
+### Get all
+GET {{base-url}}/scms
+
+### Get one
+GET {{base-url}}/scms/5
+
+### Create
+POST {{base-url}}/scms
+Content-Type: application/json
+
+{
+  "type": "gitlab",
+  "authBaseUrl": "http://auth.gitlab.local",
+  "apiBaseUrl": "http://gitlab.local/api",
+  "clientId": "test-client-id",
+  "clientSecret": "test-client-secret"
+}
+
+### delete
+DELETE {{base-url}}/scms/8
+
+###-----------------------------  SCM access tokens  ------------------------------
+
+### get by org
+GET {{base-url}}/tokens?scmId=3&orgIdentity=Org1
+
+### update
+PUT {{base-url}}/tokens/2
+Content-Type: application/json
+
+{
+  "accessToken": "token3"
+}
+
+### create if doesn't exist
+POST {{base-url}}/tokens
+Content-Type: application/json
+
+{
+  "accessToken": "at1"
+}
+
+###-----------------------------  orgs  ------------------------------
+
+### delete
+DELETE {{base-url}}/orgs/5
+
+### import org list
+PUT {{base-url}}/scms/3/orgs
+Content-Type: application/json
+
+[
+  {
+    "orgIdentity": "test-org",
+    "tokenId": 2
+  },
+  {
+    "orgIdentity": "Org3",
+    "tokenId": 1
+  }
+]
+
+### get by identity
+GET {{base-url}}/scms/3/orgs/Org2
+
+### update or create
+POST {{base-url}}/scms/2/orgs/test-org
+Content-Type: application/json
+
+{
+  "cxGoToken": "cgt1",
+  "cxTeam": "team1"
+}
+
+### get by repo base url
+GET {{base-url}}/orgs?orgIdentity=org5&repoBaseUrl=https://github.com
+
+###-----------------------------  repos  ------------------------------
+
+### get organization repos
+GET {{base-url}}/scms/1/orgs/test-org/repos
+
+### import repos
+PUT {{base-url}}/repos
+Content-Type: application/json
+
+{
+  "repoList": [
+    {
+      "webhook_id": "wh1",
+      "is_webhook_configured": true,
+      "repo_identity": "myrepo1"
+    },
+    {
+      "webhook_id": null,
+      "is_webhook_configured": false,
+      "repo_identity": "myrepo2"
+    }
+  ],
+  "scm_id": 1,
+  "org_identity": "test-org"
+}
+
+### get single
+GET {{base-url}}/scms/1/orgs/test-org/repos/myrepo2
+
+### Update webhook state
+PUT {{base-url}}/scms/1/orgs/test-org/repos/myrepo2
+Content-Type: application/json
+
+{
+  "webhook_id": "wh4",
+  "is_webhook_configured": true
+}

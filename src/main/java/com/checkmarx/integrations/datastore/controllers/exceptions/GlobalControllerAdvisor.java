@@ -15,71 +15,33 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 @Slf4j
 public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
-
-    @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException e) {
-
-        GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
-                .message(e.getMessage())
-                .localDateTime(LocalDateTime.now())
-                .build();
-
-        return new ResponseEntity<>(generalExceptionDO, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(ScmOrgNotFoundException.class)
-    public ResponseEntity<Object> handleScmOrgNotFoundException(ScmOrgNotFoundException e) {
-
-        GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
-                .message(e.getMessage())
-                .localDateTime(LocalDateTime.now())
-                .build();
-
-        return new ResponseEntity<>(generalExceptionDO, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(ScmNotFoundException.class)
-    public ResponseEntity<Object> handleScmNotFoundException(ScmNotFoundException e) {
-
-        GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
-                .message(e.getMessage())
-                .localDateTime(LocalDateTime.now())
-                .build();
-
-        return new ResponseEntity<>(generalExceptionDO, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(RepoNotFoundException.class)
-    public ResponseEntity<Object> handleRepoNotFoundException(RepoNotFoundException e) {
-        log.error("Repo not found.", e);
-
-        GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
-                .message(e.getMessage())
-                .localDateTime(LocalDateTime.now())
-                .build();
-
-        return new ResponseEntity<>(generalExceptionDO, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<GeneralExceptionDO> handleRepoNotFoundException(EntityNotFoundException e) {
+        GeneralExceptionDO externalException = toExternalException(e);
+        return new ResponseEntity<>(externalException, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler()
-    public ResponseEntity<Object> handleRuntimeRequestException(RuntimeException e){
+    public ResponseEntity<GeneralExceptionDO> handleRuntimeRequestException(RuntimeException e){
         log.error("Runtime Exception: ", e);
-        GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
-                .message(e.getMessage())
-                .localDateTime(LocalDateTime.now())
-                .build();
-
-        return new ResponseEntity<>(generalExceptionDO, HttpStatus.EXPECTATION_FAILED);
+        GeneralExceptionDO externalException = toExternalException(e);
+        return new ResponseEntity<>(externalException, HttpStatus.EXPECTATION_FAILED);
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                              HttpHeaders headers,
+                                                                              HttpStatus status,
+                                                                              WebRequest request) {
         log.error("Malformed JSON request: ", ex.getCause());
-        GeneralExceptionDO generalExceptionDO = GeneralExceptionDO.builder()
-                .message(ex.getMessage())
+        GeneralExceptionDO externalException = toExternalException(ex);
+        return new ResponseEntity<>(externalException, HttpStatus.BAD_REQUEST);
+    }
+
+    private GeneralExceptionDO toExternalException(RuntimeException cause) {
+        return GeneralExceptionDO.builder()
+                .message(cause.getMessage())
                 .localDateTime(LocalDateTime.now())
                 .build();
-
-        return new ResponseEntity<>(generalExceptionDO, HttpStatus.BAD_REQUEST);
     }
 }

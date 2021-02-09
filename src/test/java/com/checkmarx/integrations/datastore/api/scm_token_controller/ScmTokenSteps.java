@@ -1,7 +1,7 @@
 package com.checkmarx.integrations.datastore.api.scm_token_controller;
 
-import com.checkmarx.integrations.datastore.dto.AccessTokenUpdateDto;
-import com.checkmarx.integrations.datastore.dto.SCMAccessTokenDto;
+import com.checkmarx.integrations.datastore.dto.AccessTokenShortDto;
+import com.checkmarx.integrations.datastore.dto.SCMAccessTokenLegacyDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import com.checkmarx.integrations.datastore.services.OrgService;
@@ -35,9 +35,9 @@ public class ScmTokenSteps {
     @LocalServerPort
     private int port;
 
-    private SCMAccessTokenDto scmAccessTokenDto;
-    private ResponseEntity<SCMAccessTokenDto> storeResponseEntity;
-    private ResponseEntity<SCMAccessTokenDto> getResponseEntity;
+    private SCMAccessTokenLegacyDto scmAccessTokenDto;
+    private ResponseEntity<SCMAccessTokenLegacyDto> storeResponseEntity;
+    private ResponseEntity<SCMAccessTokenLegacyDto> getResponseEntity;
 
     @Autowired
     private ScmService scmService;
@@ -57,7 +57,7 @@ public class ScmTokenSteps {
     @Given("data base contains {string}, {string} and {string}")
     public void initDataBaseValues(String baseUrl, String clientId, String clientSecret) {
         scmRepository.saveAndFlush(Scm.builder()
-                                           .baseUrl(baseUrl)
+                                           .authBaseUrl(baseUrl)
                                            .clientId(clientId)
                                            .clientSecret(clientSecret)
                                            .build());
@@ -65,11 +65,11 @@ public class ScmTokenSteps {
 
     @When("storeScmAccessToken endpoint is getting called with {string}")
     public void storeScmAccessTokenEndpointIsGettingCalledWith(String scmUrl) {
-        List<SCMAccessTokenDto> scmAccessTokenDtoList = prepareScmAccessTokenDtos(scmUrl);
+        List<SCMAccessTokenLegacyDto> scmAccessTokenDtoList = prepareScmAccessTokenDtos(scmUrl);
         String path = String.format("http://localhost:%s/tokens/storeScmAccessToken", port);
-        final HttpEntity<List<SCMAccessTokenDto>> request = new HttpEntity<>(scmAccessTokenDtoList, null);
+        final HttpEntity<List<SCMAccessTokenLegacyDto>> request = new HttpEntity<>(scmAccessTokenDtoList, null);
         storeResponseEntity = restTemplate.exchange(path, HttpMethod.PUT, request,
-                                                    SCMAccessTokenDto.class);
+                                                    SCMAccessTokenLegacyDto.class);
     }
 
     @Then("{string} response status is {int}")
@@ -91,7 +91,7 @@ public class ScmTokenSteps {
     public void getScmAccessTokenEndpointIsGettingCalled() {
         String path = String.format("http://localhost:%s/tokens?scmUrl=%s&orgIdentity=%s", port,
                                     GITHUB_URL, ORG_IDENTITY);
-        getResponseEntity = restTemplate.getForEntity(path, SCMAccessTokenDto.class);
+        getResponseEntity = restTemplate.getForEntity(path, SCMAccessTokenLegacyDto.class);
         scmAccessTokenDto = getResponseEntity.getBody();
     }
 
@@ -119,21 +119,21 @@ public class ScmTokenSteps {
     public void getScmAccessTokenEndpointIsGettingCalledWithInvalidScm(String invalidScmUrl) {
         String path = String.format("http://localhost:%s/tokens?scmUrl=%s&orgIdentity=%s", port,
                                     invalidScmUrl, ORG_IDENTITY);
-        getResponseEntity = restTemplate.getForEntity(path, SCMAccessTokenDto.class);
+        getResponseEntity = restTemplate.getForEntity(path, SCMAccessTokenLegacyDto.class);
     }
 
     @When("storeScmAccessToken endpoint is getting called with invalid scm {string}")
     public void storeScmAccessTokenEndpointIsGettingCalledWithInvalidScm(String invalidScmUrl) {
-        List<SCMAccessTokenDto> scmAccessTokenDtoList = prepareScmAccessTokenDtos(invalidScmUrl);
+        List<SCMAccessTokenLegacyDto> scmAccessTokenDtoList = prepareScmAccessTokenDtos(invalidScmUrl);
         String path = String.format("http://localhost:%s/tokens/storeScmAccessToken", port);
-        final HttpEntity<List<SCMAccessTokenDto>> request = new HttpEntity<>(scmAccessTokenDtoList, null);
+        final HttpEntity<List<SCMAccessTokenLegacyDto>> request = new HttpEntity<>(scmAccessTokenDtoList, null);
         storeResponseEntity = restTemplate.exchange(path, HttpMethod.PUT, request,
-                                                    SCMAccessTokenDto.class);
+                                                    SCMAccessTokenLegacyDto.class);
     }
 
-    private List<SCMAccessTokenDto> prepareScmAccessTokenDtos(String scmUrl) {
-        List<SCMAccessTokenDto> scmAccessTokenDtos = new ArrayList<>();
-        scmAccessTokenDtos.add(SCMAccessTokenDto.builder()
+    private List<SCMAccessTokenLegacyDto> prepareScmAccessTokenDtos(String scmUrl) {
+        List<SCMAccessTokenLegacyDto> scmAccessTokenDtos = new ArrayList<>();
+        scmAccessTokenDtos.add(SCMAccessTokenLegacyDto.builder()
                                        .orgIdentity(ORG_IDENTITY)
                                        .scmUrl(scmUrl)
                                        .accessToken(ACCESS_TOKEN)
@@ -149,11 +149,12 @@ public class ScmTokenSteps {
 
     private void prepareDataBase(String scmUrl, String orgIdentity, String accessToken) {
         scmRepository.saveAndFlush(Scm.builder()
-                                           .baseUrl(scmUrl)
+                                           .authBaseUrl(scmUrl)
                                            .build());
-        Scm scm = scmService.getScmByScmUrl(scmUrl);
-        orgService.createOrGetScmOrgByOrgIdentity(scm, orgIdentity);
-        tokenService.createTokenInfoIfDoesntExist(AccessTokenUpdateDto.builder()
+// TODO: fix.
+//        Scm scm = scmService.getScmById(scmUrl);
+//        orgService.createOrgIfDoesntExist(scm, orgIdentity);
+        tokenService.createTokenInfoIfDoesntExist(AccessTokenShortDto.builder()
                 .accessToken(accessToken)
                 .build());
     }

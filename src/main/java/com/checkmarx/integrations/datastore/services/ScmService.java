@@ -1,14 +1,19 @@
 package com.checkmarx.integrations.datastore.services;
 
-import com.checkmarx.integrations.datastore.controllers.exceptions.ScmNotFoundException;
+import com.checkmarx.integrations.datastore.controllers.exceptions.EntityNotFoundException;
+import com.checkmarx.integrations.datastore.dto.SCMCreateDto;
+import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
+import com.checkmarx.integrations.datastore.models.ScmType;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
+import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.checkmarx.integrations.datastore.utils.ErrorMessages.SCM_NOT_FOUND;
 
@@ -19,46 +24,41 @@ public class ScmService {
 
     private final ScmRepository scmRepository;
 
-	public void deleteScm(Long id) {
-		scmRepository.deleteById(id);
-	}
+    public void deleteScm(long id) {
+        try {
+            scmRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException(String.format(SCM_NOT_FOUND, id), e);
+        }
+    }
 
-	public List<Scm> getAllScms() {
-		return scmRepository.findAll();
-	}
+    public List<SCMDto> getAllScms() {
+        return scmRepository.findAll()
+                .stream()
+                .map(this::toScmDto)
+                .collect(Collectors.toList());
+    }
 
-	public void createOrUpdateScm(Scm scm) {
-		Scm scmToUpdate = createOrGetScmByBaseUrl(scm.getBaseUrl());
-		scmToUpdate.setClientId(scm.getClientId());
-		scmToUpdate.setClientSecret(scm.getClientSecret());
-		scmRepository.save(scmToUpdate);
-	}
+    public SCMDto getScmById(long id) {
+        return scmRepository.findById(id)
+                .map(this::toScmDto)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(SCM_NOT_FOUND, id)));
+    }
 
-	public Scm tryGetScmByBaseUrl(String baseUrl) {
-		return scmRepository.getScmByBaseUrl(baseUrl);
-	}
+    public long createScm(SCMCreateDto scm, ScmType type) {
+        Scm scmToCreate = ObjectMapperUtil.map(scm, Scm.class);
+        scmToCreate.setType(type);
 
-	public Scm getScmByScmUrl(String scmUrl) {
-		return Optional.ofNullable(scmRepository.getScmByBaseUrl(scmUrl))
-					.orElseThrow(() -> new ScmNotFoundException(String.format(SCM_NOT_FOUND, scmUrl)));
-	}
+        Scm newScm = scmRepository.saveAndFlush(scmToCreate);
+        return newScm.getId();
+    }
 
-	private Scm createOrGetScmByBaseUrl(String baseUrl) {
-		Scm scmByBaseUrl = tryGetScmByBaseUrl(baseUrl);
-
-		if (scmByBaseUrl != null) {
-			log.trace("createOrGetScmByBaseUrl: scmByBaseUrl exists:{}", scmByBaseUrl);
-			return scmByBaseUrl;
-		} else {
-			log.trace("createOrGetScmByBaseUrl: creating new scmByBaseUrl");
-			Scm scm = Scm.builder()
-					.baseUrl(baseUrl)
-					.build();
-			return createScm(scm);
-		}
-	}
-
-	private Scm createScm(Scm scm) {
-		return scmRepository.saveAndFlush(scm);
-	}
+    private SCMDto toScmDto(Scm scm) {
+        SCMDto result = ObjectMapperUtil.map(scm, SCMDto.class);
+        ScmType type = scm.getType();
+        result.setType(type.getName());
+        result.setDisplayName(type.getDisplayName());
+        result.setScope(type.getScope());
+        return result;
+    }
 }

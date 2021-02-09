@@ -3,7 +3,7 @@ package com.checkmarx.integrations.datastore.api.scm_repo_controller;
 import com.checkmarx.integrations.datastore.dto.RepoDto;
 import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgLegacyDto;
-import com.checkmarx.integrations.datastore.dto.SCMRepoDto;
+import com.checkmarx.integrations.datastore.dto.ReposUpdateDto;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
@@ -34,6 +34,7 @@ public class ScmRepoSteps {
     private static final String INVALID_ORG_IDENTITY = "invalidOrgNameTest";
     private static final String REPO_IDENTITY_1 = "repo-1";
     private static final String REPO_IDENTITY_2 = "repo-2";
+    private static final long SCM_ID = 1;
 
     private int REPO_IDENTITY_1_WEBHOOK_ID = RandomUtils.nextInt(1, 1000);
     private int REPO_IDENTITY_2_WEBHOOK_ID = RandomUtils.nextInt(1, 1000);
@@ -59,7 +60,7 @@ public class ScmRepoSteps {
         repoDtoList.add(createRepoDto(REPO_IDENTITY_1, REPO_IDENTITY_1_WEBHOOK_ID, true));
         repoDtoList.add(createRepoDto(REPO_IDENTITY_2, REPO_IDENTITY_2_WEBHOOK_ID, false));
 
-        SCMRepoDto scmRepoDto = createScmRepoDto(repoDtoList);
+        ReposUpdateDto scmRepoDto = createScmRepoDto(repoDtoList);
         restTemplate.put(basicPath, scmRepoDto, ResponseEntity.class);
     }
 
@@ -121,9 +122,9 @@ public class ScmRepoSteps {
     }
 
 
-    private SCMRepoDto createScmRepoDto(List<RepoDto> repoDtoList) {
-        return SCMRepoDto.builder()
-                .scmUrl(SCM_URL)
+    private ReposUpdateDto createScmRepoDto(List<RepoDto> repoDtoList) {
+        return ReposUpdateDto.builder()
+                .scmId(SCM_ID)
                 .orgIdentity(ORG_IDENTITY)
                 .repoList(repoDtoList)
                 .build();
@@ -150,7 +151,7 @@ public class ScmRepoSteps {
     private void createScmInDb() {
         String path = String.format("http://localhost:%s/scms/storeScm", port);
         SCMDto scmDto = SCMDto.builder()
-                .baseUrl(SCM_URL)
+                .authBaseUrl(SCM_URL)
                 .build();
         restTemplate.postForEntity(path, scmDto, ResponseEntity.class);
     }

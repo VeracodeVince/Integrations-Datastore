@@ -1,7 +1,8 @@
 package com.checkmarx.integrations.datastore.services;
 
-import com.checkmarx.integrations.datastore.controllers.exceptions.TokenNotFoundException;
-import com.checkmarx.integrations.datastore.dto.AccessTokenUpdateDto;
+import com.checkmarx.integrations.datastore.controllers.exceptions.EntityNotFoundException;
+import com.checkmarx.integrations.datastore.dto.AccessTokenDto;
+import com.checkmarx.integrations.datastore.dto.AccessTokenShortDto;
 import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmTokenRepository;
 import com.checkmarx.integrations.datastore.utils.ErrorMessages;
@@ -19,7 +20,7 @@ import java.util.function.Supplier;
 public class TokenService {
     private final ScmTokenRepository scmTokenRepository;
 
-    public void updateTokenInfo(AccessTokenUpdateDto tokenInfo, long id) {
+    public void updateTokenInfo(AccessTokenShortDto tokenInfo, long id) {
         Token repoTokenInfo = scmTokenRepository.findById(id)
                 .orElseThrow(notFoundException(id));
 
@@ -30,7 +31,7 @@ public class TokenService {
     /**
      * @return ID of an existing or a new token.
      */
-    public long createTokenInfoIfDoesntExist(AccessTokenUpdateDto tokenInfo) {
+    public long createTokenInfoIfDoesntExist(AccessTokenShortDto tokenInfo) {
         // Some SCMs may return exactly the same token in different "generate token" API responses.
         // If this is the case, there is no need to duplicate token records in the storage
         // => reusing an existing token record.
@@ -40,7 +41,7 @@ public class TokenService {
                 .orElseGet(createToken(tokenInfo));
     }
 
-    private Supplier<Long> createToken(AccessTokenUpdateDto tokenInfo) {
+    private Supplier<Long> createToken(AccessTokenShortDto tokenInfo) {
         return () -> {
             Token repoTokenInfo = Token.builder()
                     .accessToken(tokenInfo.getAccessToken())
@@ -58,7 +59,14 @@ public class TokenService {
         return existingTokens.stream().findFirst().orElse(null);
     }
 
-    private static Supplier<TokenNotFoundException> notFoundException(long id) {
-        return () -> new TokenNotFoundException(String.format(ErrorMessages.ACCESS_TOKEN_NOT_FOUND_BY_ID, id));
+    private static Supplier<EntityNotFoundException> notFoundException(long id) {
+        return () -> new EntityNotFoundException(String.format(ErrorMessages.ACCESS_TOKEN_NOT_FOUND_BY_ID, id));
+    }
+
+    public AccessTokenDto toTokenResponse(Token tokenFromStorage) {
+        return AccessTokenDto.builder()
+                .id(tokenFromStorage.getId())
+                .accessToken(tokenFromStorage.getAccessToken())
+                .build();
     }
 }

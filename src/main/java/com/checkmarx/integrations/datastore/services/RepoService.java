@@ -1,6 +1,6 @@
 package com.checkmarx.integrations.datastore.services;
 
-import com.checkmarx.integrations.datastore.controllers.exceptions.RepoNotFoundException;
+import com.checkmarx.integrations.datastore.controllers.exceptions.EntityNotFoundException;
 import com.checkmarx.integrations.datastore.dto.RepoDto;
 import com.checkmarx.integrations.datastore.dto.RepoUpdateDto;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
@@ -20,15 +20,15 @@ public class RepoService {
 
     private final ScmRepoRepository scmRepoRepository;
 
-    public List<ScmRepo> getScmReposByOrgIdentity(String scmBaseUrl, String orgIdentity) {
-        return scmRepoRepository.getScmReposByOrgIdentity(scmBaseUrl, orgIdentity);
+    public List<ScmRepo> getScmReposByOrgIdentity(long scmId, String orgIdentity) {
+        return scmRepoRepository.getScmReposByOrgIdentity(scmId, orgIdentity);
     }
 
-    public ScmRepo getScmRepo(String scmBaseUrl, String orgIdentity, String repoIdentity) {
-        return scmRepoRepository.getRepo(scmBaseUrl, orgIdentity, repoIdentity);
+    public ScmRepo getScmRepo(long scmId, String orgIdentity, String repoIdentity) {
+        return scmRepoRepository.getRepo(scmId, orgIdentity, repoIdentity);
     }
 
-    public void updateScmOrgRepos(ScmOrg scmOrg, List<RepoDto> repoDtoList) {
+    public void updateRepos(ScmOrg scmOrg, List<RepoDto> repoDtoList) {
         repoDtoList.forEach(repoDto -> {
             String repoIdentity = repoDto.getRepoIdentity();
 
@@ -48,11 +48,11 @@ public class RepoService {
         });
     }
 
-    public void updateRepo(String scmBaseUrl, String orgIdentity, String repoIdentity, RepoUpdateDto repo) {
+    public void updateRepo(long scmId, String orgIdentity, String repoIdentity, RepoUpdateDto repo) {
         log.trace("Looking for the repo in storage.");
-        ScmRepo repoToUpdate = scmRepoRepository.findRepo(scmBaseUrl, orgIdentity, repoIdentity);
+        ScmRepo repoToUpdate = scmRepoRepository.findRepo(scmId, orgIdentity, repoIdentity);
         if (repoToUpdate == null){
-            throw new RepoNotFoundException(String.format(ErrorMessages.REPO_NOT_FOUND, repoIdentity));
+            throw new EntityNotFoundException(String.format(ErrorMessages.REPO_NOT_FOUND, repoIdentity));
         }
         log.trace("Repo found, ID: {}.", repoToUpdate.getId());
 

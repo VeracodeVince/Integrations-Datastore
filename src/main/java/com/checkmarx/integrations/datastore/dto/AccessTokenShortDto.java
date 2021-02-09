@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class AccessTokenCompleteDto extends AccessTokenUpdateDto {
-    private long id;
+@AllArgsConstructor
+public class AccessTokenShortDto {
+    private String accessToken;
 }

@@ -8,24 +8,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+// TODO: remove this class when the tests are migrated to the new entity structure.
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "scm_url",
         "org_identity",
-        "repoList"
+        "accessToken",
+        "tokenType"
 })
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SCMRepoDto {
+public class SCMAccessTokenLegacyDto {
 
     @JsonProperty("scm_url")
     private String scmUrl;
     @JsonProperty("org_identity")
     private String orgIdentity;
-    private List<RepoDto> repoList;
+    private String accessToken;
+    private String tokenType;
 }

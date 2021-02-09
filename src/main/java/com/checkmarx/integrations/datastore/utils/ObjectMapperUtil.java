@@ -1,13 +1,23 @@
 package com.checkmarx.integrations.datastore.utils;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ObjectMapperUtil {
+    private static final ModelMapper modelMapper = getModelMapper();
 
-    private static ModelMapper modelMapper = new ModelMapper();
+    static ModelMapper getModelMapper() {
+        ModelMapper result = new ModelMapper();
+
+        // Without this setting, modelMapper may show unexpected behavior.
+        // E.g. trying to map SCMCreateDto.clientId to Scm.id, which doesn't make sense.
+        result.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        return result;
+    }
 
     private ObjectMapperUtil() {
     }

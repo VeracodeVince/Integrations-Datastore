@@ -1,6 +1,6 @@
 package com.checkmarx.integrations.datastore.api.scm_org_controller;
 
-import com.checkmarx.integrations.datastore.dto.CxFlowPropertiesDto;
+import com.checkmarx.integrations.datastore.dto.SCMOrgDto;
 import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgLegacyDto;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
@@ -33,13 +33,17 @@ public class ScmOrgSteps {
     private int port;
 
     private static final String SCM_URL = "githubTest.com";
+
+    // TODO: Added as a stub for the test to compile. Should be fixed.
+    private static final String SCM_URL_TO_FIX = "fixme.org";
+
     private static final String ORG_IDENTITY = "orgNameTest";
     private static final String CX_FLOW_URL = "Cxflow.com";
     private static final String CX_GO_TOKEN = "cx-go-token-123";
     private static final String CX_TEAM = "cx-team-test";
 
-    private ResponseEntity<CxFlowPropertiesDto> getCxFlowPropertiesResponse;
-    private CxFlowPropertiesDto cxFlowPropertiesDto;
+    private ResponseEntity<SCMOrgDto> getCxFlowPropertiesResponse;
+    private SCMOrgDto scmOrg;
     private String orgsPath;
     private String orgsPropertiesPath;
 
@@ -74,55 +78,54 @@ public class ScmOrgSteps {
     @When("getCxFlowProperties endpoint is getting called with {string} as scm-url and {string} as org identity")
     public void getCxFlowPropertiesEndPointIsGettingCalled(String scmUrl, String orgIdentity) {
         URI uri = getCxFlowPropertiesEndPointUri(scmUrl, orgIdentity);
-        getCxFlowPropertiesResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
-        cxFlowPropertiesDto = getCxFlowPropertiesResponse.getBody();
+        getCxFlowPropertiesResponse = restTemplate.getForEntity(uri, SCMOrgDto.class);
+        scmOrg = getCxFlowPropertiesResponse.getBody();
     }
 
     @And("response contains scmUrl field set to {string}")
     public void validateScmUrlField(String scmUrl) {
-        Assert.assertEquals("Scm URL is not as expected", scmUrl, cxFlowPropertiesDto.getScmUrl());
+        Assert.assertEquals("Scm URL is not as expected", scmUrl, SCM_URL_TO_FIX);
     }
 
     @And("response contains orgIdentity field set to {string}")
     public void validateOrgIdentityField(String orgIdentity) {
-        Assert.assertEquals("Org identity is not as expected", orgIdentity, cxFlowPropertiesDto.getOrgIdentity());
+        Assert.assertEquals("Org identity is not as expected", orgIdentity, scmOrg.getOrgIdentity());
     }
 
     @When("getCxFlowProperties endpoint is getting called with invalid scm org parameter")
     public void getCxFlowPropertiesEndPointWithInvalidScmOrg() {
         URI uri = getCxFlowPropertiesEndPointUri("invalidGithubTest.com", "invalidOrgNameTest");
-        getCxFlowPropertiesResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
+        getCxFlowPropertiesResponse = restTemplate.getForEntity(uri, SCMOrgDto.class);
     }
 
     @Given("cx-flow details are stored into database")
     public void setCxFlowDetailsInDataBase() {
         createScmInDb();
-        CxFlowPropertiesDto cxFlowPropertiesDto = CxFlowPropertiesDto.builder()
-                .scmUrl(SCM_URL)
+        SCMOrgDto scmOrg = SCMOrgDto.builder()
                 .orgIdentity(ORG_IDENTITY)
                 .cxFlowUrl(CX_FLOW_URL)
                 .cxGoToken(CX_GO_TOKEN)
-                .cxTeam(CX_TEAM)
+                .team(CX_TEAM)
                 .build();
-        restTemplate.postForEntity(orgsPropertiesPath, cxFlowPropertiesDto, ScmOrg.class);
+        restTemplate.postForEntity(orgsPropertiesPath, scmOrg, ScmOrg.class);
     }
 
     @And("CxFlowProperties DTO details are fully retrieved")
     public void validateCxFlowDtoDetails() {
         URI uri = getCxFlowPropertiesEndPointUri(SCM_URL, ORG_IDENTITY);
-        getCxFlowPropertiesResponse = restTemplate.getForEntity(uri, CxFlowPropertiesDto.class);
-        CxFlowPropertiesDto cxFlowPropertiesDto = getCxFlowPropertiesResponse.getBody();
+        getCxFlowPropertiesResponse = restTemplate.getForEntity(uri, SCMOrgDto.class);
+        SCMOrgDto scmOrg = getCxFlowPropertiesResponse.getBody();
 
         Assert.assertEquals("Scm URL is not as expected",
-                SCM_URL, Objects.requireNonNull(cxFlowPropertiesDto).getScmUrl());
+                SCM_URL, SCM_URL_TO_FIX);
         Assert.assertEquals("Org identity is not as expected"
-                ,ORG_IDENTITY, Objects.requireNonNull(cxFlowPropertiesDto).getOrgIdentity());
+                ,ORG_IDENTITY, Objects.requireNonNull(scmOrg).getOrgIdentity());
         Assert.assertEquals("Cx-Flow URL is not as expected"
-                ,CX_FLOW_URL, Objects.requireNonNull(cxFlowPropertiesDto).getCxFlowUrl());
+                ,CX_FLOW_URL, Objects.requireNonNull(scmOrg).getCxFlowUrl());
         Assert.assertEquals("Cx-GO token is not as expected"
-                ,CX_GO_TOKEN, Objects.requireNonNull(cxFlowPropertiesDto).getCxGoToken());
+                ,CX_GO_TOKEN, Objects.requireNonNull(scmOrg).getCxGoToken());
         Assert.assertEquals("Cx-team token is not as expected"
-                ,CX_TEAM, Objects.requireNonNull(cxFlowPropertiesDto).getCxTeam());
+                ,CX_TEAM, Objects.requireNonNull(scmOrg).getTeam());
     }
 
     private URI getCxFlowPropertiesEndPointUri(String scmUrl, String orgIdentity) {
@@ -136,7 +139,7 @@ public class ScmOrgSteps {
     private void createScmInDb() {
         String path = String.format("http://localhost:%s/scms/storeScm", port);
         SCMDto scmDto = SCMDto.builder()
-                .baseUrl(SCM_URL)
+                .authBaseUrl(SCM_URL)
                 .build();
         restTemplate.postForEntity(path, scmDto, ResponseEntity.class);
     }
