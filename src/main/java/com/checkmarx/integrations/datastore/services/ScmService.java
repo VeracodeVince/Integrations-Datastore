@@ -6,9 +6,9 @@ import com.checkmarx.integrations.datastore.dto.SCMDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmType;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
-import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +21,8 @@ import static com.checkmarx.integrations.datastore.utils.ErrorMessages.SCM_NOT_F
 @RequiredArgsConstructor
 @Slf4j
 public class ScmService {
-
     private final ScmRepository scmRepository;
+    private final ModelMapper modelMapper;
 
     public void deleteScm(long id) {
         try {
@@ -46,7 +46,7 @@ public class ScmService {
     }
 
     public long createScm(SCMCreateDto scm, ScmType type) {
-        Scm scmToCreate = ObjectMapperUtil.map(scm, Scm.class);
+        Scm scmToCreate = modelMapper.map(scm, Scm.class);
         scmToCreate.setType(type);
 
         Scm newScm = scmRepository.saveAndFlush(scmToCreate);
@@ -54,7 +54,7 @@ public class ScmService {
     }
 
     private SCMDto toScmDto(Scm scm) {
-        SCMDto result = ObjectMapperUtil.map(scm, SCMDto.class);
+        SCMDto result = modelMapper.map(scm, SCMDto.class);
         ScmType type = scm.getType();
         result.setType(type.getName());
         result.setDisplayName(type.getDisplayName());

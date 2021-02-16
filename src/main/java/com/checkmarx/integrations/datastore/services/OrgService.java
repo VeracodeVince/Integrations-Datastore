@@ -9,9 +9,9 @@ import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import com.checkmarx.integrations.datastore.utils.ErrorMessages;
-import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -27,6 +27,7 @@ public class OrgService {
     private EntityManager entityManager;
 
     private final ScmOrgRepository scmOrgRepository;
+    private final ModelMapper modelMapper;
 
     public ScmOrg getOrg(long scmId, String orgIdentity) {
         return scmOrgRepository.getScmOrg(scmId, orgIdentity);
@@ -34,14 +35,14 @@ public class OrgService {
 
     public SCMOrgDto getOrgOrThrow(long scmId, String orgIdentity) {
         return Optional.ofNullable(getOrg(scmId, orgIdentity))
-                .map(OrgService::toWebDto)
+                .map(this::toWebDto)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ErrorMessages.ORG_NOT_FOUND_BY_IDENTITY, orgIdentity, scmId)));
     }
 
     public SCMOrgDto getOrgByRepoBaseUrl(String orgIdentity, String repoBaseUrl) {
         return Optional.ofNullable(scmOrgRepository.getByRepoBaseUrl(orgIdentity, repoBaseUrl))
-                .map(OrgService::toWebDto)
+                .map(this::toWebDto)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format(ErrorMessages.ORG_NOT_FOUND_BY_REPO, orgIdentity, repoBaseUrl)));
     }
@@ -116,8 +117,8 @@ public class OrgService {
         scmOrgRepository.saveAndFlush(orgForStorage);
     }
 
-    private static SCMOrgDto toWebDto(ScmOrg org) {
-        SCMOrgDto result = ObjectMapperUtil.map(org, SCMOrgDto.class);
+    private SCMOrgDto toWebDto(ScmOrg org) {
+        SCMOrgDto result = modelMapper.map(org, SCMOrgDto.class);
         result.setScmId(org.getScm().getId());
         result.setTokenId(org.getAccessToken().getId());
         return result;

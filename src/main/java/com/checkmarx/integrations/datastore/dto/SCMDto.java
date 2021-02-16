@@ -14,6 +14,5 @@ import lombok.experimental.SuperBuilder;
 public class SCMDto extends SCMCreateDto {
     private long id;
 
-    // This property doesn't appear in the base class, because this property comes from the parent 'SCM type' entity.
     private String scope;
 }

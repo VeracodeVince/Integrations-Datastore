@@ -1,14 +1,10 @@
 package com.checkmarx.integrations.datastore.controllers;
 
-import com.checkmarx.integrations.datastore.controllers.exceptions.EntityNotFoundException;
 import com.checkmarx.integrations.datastore.dto.RepoDto;
 import com.checkmarx.integrations.datastore.dto.RepoUpdateDto;
 import com.checkmarx.integrations.datastore.dto.ReposUpdateDto;
-import com.checkmarx.integrations.datastore.models.ScmRepo;
 import com.checkmarx.integrations.datastore.services.RepoService;
 import com.checkmarx.integrations.datastore.services.StorageService;
-import com.checkmarx.integrations.datastore.utils.ErrorMessages;
-import com.checkmarx.integrations.datastore.utils.ObjectMapperUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,12 +26,10 @@ public class RepoController {
     @GetMapping("scms/{scmId}/orgs/{orgIdentity}/repos")
     public List<RepoDto> getScmReposByOrgIdentity(@PathVariable long scmId, @PathVariable String orgIdentity) {
         log.trace("getScmReposByOrgIdentity: scmId={}, orgIdentity={}", scmId, orgIdentity);
-        List<ScmRepo> repos = repoService.getScmReposByOrgIdentity(scmId, orgIdentity);
+        List<RepoDto> repos = repoService.getScmReposByOrgIdentity(scmId, orgIdentity);
+        log.trace("getScmReposByOrgIdentity: repoDtoList:{}", repos);
 
-        List<RepoDto> repoDtoList = ObjectMapperUtil.mapList(repos, RepoDto.class);
-        log.trace("getScmReposByOrgIdentity: repoDtoList:{}", repoDtoList);
-
-        return repoDtoList;
+        return repos;
     }
 
     @Operation(summary = "Gets SCM repo by repo identity.")
@@ -47,10 +40,7 @@ public class RepoController {
                                               @PathVariable String orgIdentity,
                                               @PathVariable String repoIdentity) {
         log.trace("getScmRepo: scmId={}, orgIdentity={}, repoIdentity={}", scmId, orgIdentity, repoIdentity);
-        ScmRepo scmRepo = Optional.ofNullable(repoService.getScmRepo(scmId, orgIdentity, repoIdentity))
-                .orElseThrow(() -> new EntityNotFoundException(String.format(ErrorMessages.REPO_NOT_FOUND, repoIdentity)));
-
-        RepoDto repoDto = ObjectMapperUtil.map(scmRepo, RepoDto.class);
+        RepoDto repoDto = repoService.getScmRepo(scmId, orgIdentity, repoIdentity);
         log.trace("getScmRepo: repoDto:{}", repoDto);
 
         return ResponseEntity.ok(repoDto);

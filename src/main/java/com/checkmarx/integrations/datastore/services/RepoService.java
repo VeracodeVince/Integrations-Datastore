@@ -9,23 +9,31 @@ import com.checkmarx.integrations.datastore.repositories.ScmRepoRepository;
 import com.checkmarx.integrations.datastore.utils.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class RepoService {
-
     private final ScmRepoRepository scmRepoRepository;
+    private final ModelMapper modelMapper;
 
-    public List<ScmRepo> getScmReposByOrgIdentity(long scmId, String orgIdentity) {
-        return scmRepoRepository.getScmReposByOrgIdentity(scmId, orgIdentity);
+    public List<RepoDto> getScmReposByOrgIdentity(long scmId, String orgIdentity) {
+        return scmRepoRepository.getScmReposByOrgIdentity(scmId, orgIdentity).stream()
+                .map(element -> modelMapper.map(element, RepoDto.class))
+                .collect(Collectors.toList());
     }
 
-    public ScmRepo getScmRepo(long scmId, String orgIdentity, String repoIdentity) {
-        return scmRepoRepository.getRepo(scmId, orgIdentity, repoIdentity);
+    public RepoDto getScmRepo(long scmId, String orgIdentity, String repoIdentity) {
+        ScmRepo repo = scmRepoRepository.getRepo(scmId, orgIdentity, repoIdentity);
+        return Optional.ofNullable(repo)
+                .map(aRepo -> modelMapper.map(aRepo, RepoDto.class))
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ErrorMessages.REPO_NOT_FOUND, repoIdentity)));
     }
 
     public void updateRepos(ScmOrg scmOrg, List<RepoDto> repoDtoList) {

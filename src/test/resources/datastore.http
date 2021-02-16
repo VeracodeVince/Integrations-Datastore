@@ -114,3 +114,15 @@ Content-Type: application/json
   "webhook_id": "wh4",
   "is_webhook_configured": true
 }
+
+###-----------------------------  scan details  ------------------------------
+
+###
+GET {{base-url}}/scanDetails/8f8c4fab-0213-48d1-ab83-5173f867da73
+
+### create
+POST {{base-url}}/scanDetails
+Content-Type: application/json
+
+{"scanId": "8f8c4fab-0213-48d1-ab83-5173f867da73", "body": "job2"}
+

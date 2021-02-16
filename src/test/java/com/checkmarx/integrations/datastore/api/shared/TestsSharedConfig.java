@@ -1,7 +1,7 @@
 package com.checkmarx.integrations.datastore.api.shared;
 
 
-import com.checkmarx.integrations.datastore.IntegrationsDataStoreApplication;
+import com.checkmarx.integrations.datastore.DataStoreApp;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import org.springframework.boot.SpringApplication;
@@ -13,12 +13,12 @@ public class TestsSharedConfig {
 
     @Before
     public void before() {
-        SpringApplication springApplication = new SpringApplication(IntegrationsDataStoreApplication.class);
-        context =  springApplication.run();
+        SpringApplication springApplication = new SpringApplication(DataStoreApp.class);
+        context = springApplication.run();
     }
 
     @After
-    public void after(){
+    public void after() {
         context.close();
     }
 }

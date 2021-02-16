@@ -17,12 +17,21 @@ import java.time.LocalDateTime;
 public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<GeneralExceptionDO> handleRepoNotFoundException(EntityNotFoundException e) {
+        // There is no need to log a huge stack trace.
+        log.error("Intercepted {}", e.toString());
+
         GeneralExceptionDO externalException = toExternalException(e);
         return new ResponseEntity<>(externalException, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<GeneralExceptionDO> handleDuplicateKeyException(DuplicateKeyException e) {
+        log.error("Intercepted {}", e.toString());
+        return new ResponseEntity<>(toExternalException(e), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler()
-    public ResponseEntity<GeneralExceptionDO> handleRuntimeRequestException(RuntimeException e){
+    public ResponseEntity<GeneralExceptionDO> handleRuntimeRequestException(RuntimeException e) {
         log.error("Runtime Exception: ", e);
         GeneralExceptionDO externalException = toExternalException(e);
         return new ResponseEntity<>(externalException, HttpStatus.EXPECTATION_FAILED);
@@ -30,9 +39,9 @@ public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-                                                                              HttpHeaders headers,
-                                                                              HttpStatus status,
-                                                                              WebRequest request) {
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
         log.error("Malformed JSON request: ", ex.getCause());
         GeneralExceptionDO externalException = toExternalException(ex);
         return new ResponseEntity<>(externalException, HttpStatus.BAD_REQUEST);

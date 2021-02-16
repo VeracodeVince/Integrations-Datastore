@@ -44,7 +44,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.checkmarx.integrations.datastore.IntegrationsDataStoreApplication</mainClass>
+                    <mainClass>com.checkmarx.integrations.datastore.DataStoreApp</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -168,6 +168,10 @@
             <version>${spring.boot.starter.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
         <!-- Spring Boot end -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -187,6 +191,11 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>2.3.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.4</version>
         </dependency>
     </dependencies>
 	
