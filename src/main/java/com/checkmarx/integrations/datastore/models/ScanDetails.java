@@ -1,6 +1,10 @@
 package com.checkmarx.integrations.datastore.models;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.time.*;
@@ -13,6 +17,7 @@ import java.time.*;
 @NoArgsConstructor
 @Table(name = "scan_details",
         uniqueConstraints = @UniqueConstraint(columnNames = "scan_id"))
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class ScanDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +28,9 @@ public class ScanDetails {
 
     private LocalDateTime created;
 
-    @Column(length = 10000)
-    private String body;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private JsonNode body;
 
     @PrePersist
     public void setCreatedTimestamp() {

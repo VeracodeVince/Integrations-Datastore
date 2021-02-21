@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ScanDetailsSteps {
+    private static final String MISSING_INDICATOR = "<missing>";
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @LocalServerPort
@@ -38,19 +39,16 @@ public class ScanDetailsSteps {
     private ResponseEntity<String> response;
 
     @Given("database initially contains scan details with scan ID: {word} and body: {string}")
-    public void databaseInitiallyContains(String scanId, String body) {
+    public void databaseInitiallyContains(String scanId, String body) throws JsonProcessingException {
         repo.save(ScanDetails.builder()
                 .scanId(scanId)
-                .body(body)
+                .body(objectMapper.readTree(body))
                 .build());
     }
 
     @When("API client calls the `create scan details` API with scan ID: {word} and body: {string}")
-    public void clientCallsTheCreateScanDetailsAPI(String scanId, String body) {
-        ObjectNode requestContents = objectMapper.createObjectNode();
-        setEffectiveFieldValue("scanId", scanId, requestContents);
-        setEffectiveFieldValue("body", body, requestContents);
-
+    public void clientCallsTheCreateScanDetailsAPI(String scanId, String body) throws JsonProcessingException {
+        ObjectNode requestContents = getCreationRequestContents(scanId, body);
         HttpEntity<ObjectNode> request = new HttpEntity<>(requestContents);
         String url = String.format("http://localhost:%d/scanDetails", port);
         response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
@@ -67,33 +65,37 @@ public class ScanDetailsSteps {
         assertEquals("Unexpected response status code.", expectedStatus, response.getStatusCodeValue());
     }
 
-    @Then("response contains {string} field set to {string}")
-    public void responseContainsFieldSetTo(String fieldName, String expectedFieldValue) throws JsonProcessingException {
+    @Then("response content is {string}")
+    public void responseContentIs(String expectedContent) {
         assertNotNull("Response is null.", response);
-        JsonNode responseJson = objectMapper.readTree(response.getBody());
-        JsonNode propertyNode = responseJson.get(fieldName);
-        assertNotNull("Field value is null.", propertyNode);
-        assertEquals("Unexpected field value.", expectedFieldValue, propertyNode.textValue());
+        assertEquals("Unexpected response content.", expectedContent, response.getBody());
     }
 
-    @Then("database {string} scan details with scan ID: {word} and body: {string}")
-    public void databaseContainsOrNotScanDetails(String containsOrNot, String scanId, String body) {
+    @Then("database contains scan details with scan ID: {word} and body: {string}")
+    public void databaseContainsScanDetails(String scanId, String body) {
         Optional<ScanDetails> scanDetails = repo.findByScanId(scanId);
-        log.info("Checking database for scan ID: {}", scanId);
-        if (containsOrNot.equals("contains")) {
-            assertTrue("Expected the DB to contain scan details, but it doesn't.", scanDetails.isPresent());
-            String expectedBody = getActualOrEmptyValue(body);
-            assertEquals("Unexpected scan details body.", expectedBody, scanDetails.get().getBody());
-        } else {
-            assertFalse("Expected scan details to not exist in the DB, but they do.", scanDetails.isPresent());
-        }
+        assertTrue("Expected the DB to contain scan details, but it doesn't.", scanDetails.isPresent());
+        String expectedBody = getActualOrEmptyValue(body);
+        assertEquals("Unexpected scan details body.", expectedBody, scanDetails.get().getBody().toString());
     }
 
-    private void setEffectiveFieldValue(String fieldName, String fieldValue, ObjectNode target) {
-        if (!fieldValue.equals("<missing>")) {
-            String effectiveValue = getActualOrEmptyValue(fieldValue);
-            target.put(fieldName, effectiveValue);
+    @Then("database does not contain scan details for scan ID: {word}")
+    public void databaseContainsOrNotScanDetails(String scanId) {
+        Optional<ScanDetails> scanDetails = repo.findByScanId(scanId);
+        assertFalse("Expected scan details to not exist in the DB, but they do.", scanDetails.isPresent());
+    }
+
+    private ObjectNode getCreationRequestContents(String scanId, String body) throws JsonProcessingException {
+        ObjectNode requestContents = objectMapper.createObjectNode();
+        if (!scanId.equals(MISSING_INDICATOR)) {
+            String effectiveValue = getActualOrEmptyValue(scanId);
+            requestContents.put("scanId", effectiveValue);
         }
+        if (!body.equals(MISSING_INDICATOR)) {
+            JsonNode bodyJson = objectMapper.readTree(getActualOrEmptyValue(body));
+            requestContents.set("body", bodyJson);
+        }
+        return requestContents;
     }
 
     private static String getActualOrEmptyValue(String value) {

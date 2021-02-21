@@ -24,8 +24,8 @@ public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(externalException, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<GeneralExceptionDO> handleDuplicateKeyException(DuplicateKeyException e) {
+    @ExceptionHandler({DuplicateKeyException.class, DataStoreException.class})
+    public ResponseEntity<GeneralExceptionDO> handleBadRequest(RuntimeException e) {
         log.error("Intercepted {}", e.toString());
         return new ResponseEntity<>(toExternalException(e), HttpStatus.BAD_REQUEST);
     }

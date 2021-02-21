@@ -118,11 +118,11 @@ Content-Type: application/json
 ###-----------------------------  scan details  ------------------------------
 
 ###
-GET {{base-url}}/scanDetails/8f8c4fab-0213-48d1-ab83-5173f867da73
+GET {{base-url}}/scanDetails/8f8c4fab-0213-48d1-ab83-5173f867da81
 
 ### create
 POST {{base-url}}/scanDetails
 Content-Type: application/json
 
-{"scanId": "8f8c4fab-0213-48d1-ab83-5173f867da73", "body": "job2"}
+{"scanId": "8f8c4fab-0213-48d1-ab83-5173f867da81", "body": {"foo": "bar"}}
 
