@@ -200,7 +200,35 @@ jobs:
           command: |
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD} docker.io
             docker push checkmarx/integrations-datastore
-
+            
+  publish-to-ECR:
+    executor: aws-cli/default
+    working_directory: ~/repo
+    steps:
+      - setup_remote_docker:
+          version: 19.03.13
+      - attach_workspace:
+          at: .
+      - aws-cli/setup:
+          aws-access-key-id: ECR_ACCESS_KEY_ID
+          aws-secret-access-key: ECR_SECRET_ACCESS_KEY
+          aws-region: ECR_REGION
+      - run:
+          name: Load Datastore Docker Image from File
+          command: |
+            docker load -i datastore-image.tar
+            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 ${ECR_ACCOUNT_URL}/integrations-datastore:${CIRCLE_SHA1::7}
+            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 ${ECR_ACCOUNT_URL}/integrations-datastore:latest
+      - run:
+          name: Login to AWS ECR
+          command: aws ecr get-login-password | docker login --username AWS --password-stdin https://${ECR_ACCOUNT_URL}
+      - run:
+          name: Publish Docker images to ECR
+          command: docker push ${ECR_ACCOUNT_URL}/integrations-datastore
+          
+orbs:
+  aws-cli: circleci/aws-cli@1.4.0
+  
 workflows:
   ci-cd:
     jobs:
@@ -226,6 +254,13 @@ workflows:
 #          requires:
 #            - deploy
       - publish-to-DockerHub:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - deploy
+      - publish-to-ECR:
           filters:
             branches:
               only:
