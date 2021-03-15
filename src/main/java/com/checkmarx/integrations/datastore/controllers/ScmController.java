@@ -22,6 +22,15 @@ public class ScmController {
     private final ScmService scmService;
     private final StorageService storageService;
 
+    @Operation(summary = "Find an SCM by its repo base URL")
+    @GetMapping(value = "search")
+    @ApiResponse(responseCode = "200", description = "SCM found.", content = @Content)
+    @ApiResponse(responseCode = "404", description = "SCM not found.", content = @Content)
+    public SCMDto getScmByRepoBaseUrl(@RequestParam String repoBaseUrl) {
+        log.trace("getScmByRepoBaseUrl: repoBaseUrl:{}", repoBaseUrl);
+        return scmService.getScmByRepoBaseUrl(repoBaseUrl);
+    }
+
     @Operation(summary = "Gets details of all SCMs")
     @GetMapping
     public List<SCMDto> getAllScms() {

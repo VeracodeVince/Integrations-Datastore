@@ -10,5 +10,6 @@ public class ErrorMessages {
     public static final String ORG_NOT_FOUND_BY_IDENTITY = "The '%s' org for the SCM ID %d cannot be found.";
     public static final String ORG_NOT_FOUND_BY_REPO = "The '%s' org with the '%s' repo base URL cannot be found.";
     public static final String SCM_NOT_FOUND = "SCM with ID %d cannot be found";
+    public static final String SCM_NOT_FOUND_BY_REPO_BASE_URL = "SCM with cannot be found for repo base URL: '%s'";
     public static final String INVALID_SCM_TYPE = "Invalid SCM type: '%s'.";
 }

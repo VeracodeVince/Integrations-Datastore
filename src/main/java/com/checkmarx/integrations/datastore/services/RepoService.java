@@ -77,5 +77,6 @@ public class RepoService {
     private static void copyPropertyValues(RepoUpdateDto src, ScmRepo target) {
         target.setWebhookId(src.getWebhookId());
         target.setWebhookConfigured(src.isWebhookConfigured());
+        target.setWebhookKey(src.getWebhookKey());
     }
 }

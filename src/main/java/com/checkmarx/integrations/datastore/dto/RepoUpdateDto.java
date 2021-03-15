@@ -12,6 +12,9 @@ public class RepoUpdateDto {
     @JsonProperty("webhook_id")
     private String webhookId;
 
+    @JsonProperty("webhook_key")
+    private String webhookKey;
+
     @JsonProperty("is_webhook_configured")
     private boolean isWebhookConfigured;
 }

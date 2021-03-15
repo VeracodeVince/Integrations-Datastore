@@ -34,6 +34,9 @@ public class ScmRepo {
     @Column(name = "webhook_id", length = MAX_LENGTH)
     private String webhookId;
 
+    @Column(name = "webhook_key", length = MAX_LENGTH)
+    private String webhookKey;
+
     @Column(name = "is_webhook_configured")
     private boolean isWebhookConfigured;
 }

@@ -13,8 +13,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.checkmarx.integrations.datastore.utils.ErrorMessages.SCM_NOT_FOUND_BY_REPO_BASE_URL;
 import static com.checkmarx.integrations.datastore.utils.ErrorMessages.SCM_NOT_FOUND;
 
 @Service
@@ -23,6 +25,12 @@ import static com.checkmarx.integrations.datastore.utils.ErrorMessages.SCM_NOT_F
 public class ScmService {
     private final ScmRepository scmRepository;
     private final ModelMapper modelMapper;
+
+    public SCMDto getScmByRepoBaseUrl(String repoBaseUrl) {
+        return Optional.ofNullable(scmRepository.getScmByRepoBaseUrl(repoBaseUrl))
+                .map(this::toScmDto)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(SCM_NOT_FOUND_BY_REPO_BASE_URL, repoBaseUrl)));
+    }
 
     public void deleteScm(long id) {
         try {
