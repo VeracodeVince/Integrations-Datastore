@@ -218,7 +218,7 @@ jobs:
           command: |
             docker load -i datastore-image.tar
             docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 ${ECR_ACCOUNT_URL}/integrations-datastore:${CIRCLE_SHA1::7}
-            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 ${ECR_ACCOUNT_URL}/integrations-datastore:latest
+            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 ${ECR_ACCOUNT_URL}/integrations-datastore:charmander
       - run:
           name: Login to AWS ECR
           command: aws ecr get-login-password | docker login --username AWS --password-stdin https://${ECR_ACCOUNT_URL}
