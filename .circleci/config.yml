@@ -12,7 +12,7 @@ jobs:
       - checkout
       - restore_cache:
           key: maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
-      - run: mvn clean install -DskipTests
+      - run: mvn clean install -DskipTests --settings .circleci/maven-settings.xml
       - save_cache:
           paths:
             - ~/.m2
