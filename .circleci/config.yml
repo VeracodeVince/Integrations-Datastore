@@ -224,7 +224,9 @@ jobs:
           command: aws ecr get-login-password | docker login --username AWS --password-stdin https://${ECR_ACCOUNT_URL}
       - run:
           name: Publish Docker images to ECR
-          command: docker push ${ECR_ACCOUNT_URL}/integrations-datastore
+          command: |
+            docker push ${ECR_ACCOUNT_URL}/integrations-datastore:${CIRCLE_SHA1::7}
+            docker push ${ECR_ACCOUNT_URL}/integrations-datastore:charmander
           
 orbs:
   aws-cli: circleci/aws-cli@1.4.0
