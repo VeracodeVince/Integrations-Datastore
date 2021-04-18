@@ -194,7 +194,7 @@ jobs:
           command: |
             docker load -i datastore-image.tar
             docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 checkmarx/integrations-datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
-            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 checkmarx/integrations-datastore:latest
+            docker tag datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 checkmarx/integrations-datastore:charmander
       - run:
           name: Publish Docker images to Docker Hub
           command: |
