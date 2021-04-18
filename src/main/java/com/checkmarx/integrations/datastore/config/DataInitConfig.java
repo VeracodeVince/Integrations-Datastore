@@ -27,6 +27,15 @@ public class DataInitConfig {
     @Value("${bitbucket.client.sec}")
     private String bitbucketClientSec;
 
+    @Value("${github.client.id}")
+    private String githubClientId;
+    @Value("${gitlab.client.id}")
+    private String gitlabClientId;
+    @Value("${azure.client.id}")
+    private String azureClientId;
+    @Value("${bitbucket.client.id}")
+    private String bitbucketClientId;
+
     private final ScmRepository scmRepository;
 
 
@@ -35,9 +44,9 @@ public class DataInitConfig {
     public void dataInit(){
         log.info("Running post construct data initiation");
 
-        scmRepository.updateScmClientSecret(githubClientSec, GITHUB_REPO_BASE);
-        scmRepository.updateScmClientSecret(gitlabClientSec, GITLAB_REPO_BASE);
-        scmRepository.updateScmClientSecret(azureClientSec, AZURE_REPO_BASE);
-        scmRepository.updateScmClientSecret(bitbucketClientSec, BITBUCKET_REPO_BASE);
+        scmRepository.updateScmClientDetails(githubClientSec, githubClientId, GITHUB_REPO_BASE);
+        scmRepository.updateScmClientDetails(gitlabClientSec, gitlabClientId, GITLAB_REPO_BASE);
+        scmRepository.updateScmClientDetails(azureClientSec, azureClientId, AZURE_REPO_BASE);
+        scmRepository.updateScmClientDetails(bitbucketClientSec, bitbucketClientId, BITBUCKET_REPO_BASE);
     }
 }

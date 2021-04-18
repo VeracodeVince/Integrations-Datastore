@@ -13,6 +13,6 @@ public interface ScmRepository extends JpaRepository<Scm, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Scm s SET s.clientSecret = ?1 WHERE s.repoBaseUrl = ?2")
-    void updateScmClientSecret(String clientSecret, String repoBaseUrl);
+    @Query("UPDATE Scm s SET s.clientSecret = ?1, s.clientId = ?2 WHERE s.repoBaseUrl = ?3")
+    void updateScmClientDetails(String clientSecret, String clientId, String repoBaseUrl);
 }
