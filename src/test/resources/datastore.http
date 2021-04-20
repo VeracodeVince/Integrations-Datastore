@@ -54,7 +54,7 @@ Content-Type: application/json
 [
   {
     "orgIdentity": "test-org",
-    "tokenId": 2
+    "tokenId": 1
   },
   {
     "orgIdentity": "Org3",
@@ -70,8 +70,8 @@ POST {{base-url}}/scms/2/orgs/test-org
 Content-Type: application/json
 
 {
-  "cxGoToken": "cgt1",
-  "cxTeam": "team1"
+  "cxFlowConfig": "cfc1",
+  "team": "team1"
 }
 
 ### get by repo base url
@@ -118,11 +118,14 @@ Content-Type: application/json
 ###-----------------------------  scan details  ------------------------------
 
 ###
-GET {{base-url}}/scanDetails/8f8c4fab-0213-48d1-ab83-5173f867da81
+GET {{base-url}}/scanDetails/8f8c4fab-0213-48d1-ab83-5173f867da83
 
 ### create
 POST {{base-url}}/scanDetails
 Content-Type: application/json
 
-{"scanId": "8f8c4fab-0213-48d1-ab83-5173f867da81", "body": {"foo": "bar"}}
+{
+  "scanId": "8f8c4fab-0213-48d1-ab83-5173f867da83",
+  "body": {"projectName": "MyAwesomeProject", "details": {"branch": "master"},"thresholds": [1,2,4]}
+}
 

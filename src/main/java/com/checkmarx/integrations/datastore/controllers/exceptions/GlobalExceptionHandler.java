@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 @Slf4j
-public class GlobalControllerAdvisor extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<GeneralExceptionDO> handleRepoNotFoundException(EntityNotFoundException e) {
         // There is no need to log a huge stack trace.

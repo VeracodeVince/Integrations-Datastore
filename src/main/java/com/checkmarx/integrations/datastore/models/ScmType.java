@@ -3,7 +3,6 @@ package com.checkmarx.integrations.datastore.models;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,5 +28,5 @@ public class ScmType {
     private String scope;
 
     @OneToMany(mappedBy = "type", cascade = CascadeType.REMOVE)
-    private List<Scm> scms = new ArrayList<>();
+    private List<Scm> scms;
 }

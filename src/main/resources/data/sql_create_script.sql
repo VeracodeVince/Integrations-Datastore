@@ -21,7 +21,6 @@ CREATE TABLE scm_orgs
 	org_name		    varchar(250),
 	cx_flow_url 	  varchar(50),
   cx_flow_config 	varchar(1000),
-	cx_go_token 	  varchar(100),
 	team			      varchar(50),
 	unique (scm_id, org_identity),
 

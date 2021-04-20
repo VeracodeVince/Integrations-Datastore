@@ -1,0 +1,2 @@
+-- This file is intentionally left blank to avoid populating tables with predefined data.
+-- The tests want to populate the tables themselves.

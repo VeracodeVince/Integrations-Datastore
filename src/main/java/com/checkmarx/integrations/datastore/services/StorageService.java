@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 
 /**
  * Used for actions that involve several entity services at the same time.
- * TODO: move more logic from controllers and other services here.
  */
 @Service
 @RequiredArgsConstructor

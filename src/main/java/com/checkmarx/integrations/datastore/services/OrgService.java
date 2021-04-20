@@ -8,14 +8,14 @@ import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
+import com.checkmarx.integrations.datastore.repositories.ScmRepository;
+import com.checkmarx.integrations.datastore.repositories.ScmTokenRepository;
 import com.checkmarx.integrations.datastore.utils.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,21 +23,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class OrgService {
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final ScmOrgRepository scmOrgRepository;
+    private final ScmRepository scmRepository;
+    private final ScmTokenRepository tokenRepository;
     private final ModelMapper modelMapper;
 
     public ScmOrg getOrg(long scmId, String orgIdentity) {
         return scmOrgRepository.getScmOrg(scmId, orgIdentity);
-    }
-
-    public SCMOrgDto getOrgOrThrow(long scmId, String orgIdentity) {
-        return Optional.ofNullable(getOrg(scmId, orgIdentity))
-                .map(this::toWebDto)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(ErrorMessages.ORG_NOT_FOUND_BY_IDENTITY, orgIdentity, scmId)));
     }
 
     public SCMOrgDto getOrgByRepoBaseUrl(String orgIdentity, String repoBaseUrl) {
@@ -47,15 +39,15 @@ public class OrgService {
                         String.format(ErrorMessages.ORG_NOT_FOUND_BY_REPO, orgIdentity, repoBaseUrl)));
     }
 
-    public void deleteScmOrgById(long id) {
+    public void deleteOrg(long id) {
         scmOrgRepository.deleteById(id);
     }
 
     public void updateOrg(ScmOrg org, SCMOrgUpdateDto updateRequest) {
         log.trace("updateOrg: org ID: {}, update request: {}", org.getId(), updateRequest);
 
-        Optional.ofNullable(updateRequest.getCxGoToken())
-                .ifPresent(org::setCxGoToken);
+        Optional.ofNullable(updateRequest.getCxFlowConfig())
+                .ifPresent(org::setCxFlowConfig);
 
         Optional.ofNullable(updateRequest.getTeam())
                 .ifPresent(org::setTeam);
@@ -72,20 +64,14 @@ public class OrgService {
             log.trace("createOrgIfDoesntExist: org exists: {}", existingOrg);
             return existingOrg;
         } else {
-            log.trace("createOrgIfDoesntExist: org not found, creating a new one.");
-            Scm scmRef = entityManager.getReference(Scm.class, scmId);
-            ScmOrg scmOrg = ScmOrg.builder()
-                    .orgIdentity(orgIdentity)
-                    .scm(scmRef)
-                    .build();
-
-            return scmOrgRepository.saveAndFlush(scmOrg);
+            return createOrg(scmId, orgIdentity);
         }
     }
 
     public void importOrgsIntoStorage(List<SCMOrgShortDto> orgs, long scmId) {
         int updatedCount = 0;
         int createdCount = 0;
+        getScmOrThrow(scmId);
         for (SCMOrgShortDto org : orgs) {
             ScmOrg existingOrg = getOrg(scmId, org.getOrgIdentity());
             if (existingOrg != null) {
@@ -100,18 +86,18 @@ public class OrgService {
         log.trace("importOrgsIntoStorage: orgs created: {}, updated: {}.", createdCount, updatedCount);
     }
 
-    public void updateTokenId(ScmOrg org, long newTokenId) {
-        Token tokenRef = entityManager.getReference(Token.class, newTokenId);
-        org.setAccessToken(tokenRef);
+    private void updateTokenId(ScmOrg org, long newTokenId) {
+        Token token = getTokenOrThrow(newTokenId);
+        org.setAccessToken(token);
         scmOrgRepository.saveAndFlush(org);
     }
 
     public void createOrg(SCMOrgShortDto org, long scmId) {
-        Token tokenRef = entityManager.getReference(Token.class, org.getTokenId());
-        Scm scmRef = entityManager.getReference(Scm.class, scmId);
+        Token token = getTokenOrThrow(org.getTokenId());
+        Scm scm = getScmOrThrow(scmId);
         ScmOrg orgForStorage = ScmOrg.builder()
-                .accessToken(tokenRef)
-                .scm(scmRef)
+                .accessToken(token)
+                .scm(scm)
                 .orgIdentity(org.getOrgIdentity())
                 .build();
         scmOrgRepository.saveAndFlush(orgForStorage);
@@ -120,7 +106,41 @@ public class OrgService {
     private SCMOrgDto toWebDto(ScmOrg org) {
         SCMOrgDto result = modelMapper.map(org, SCMOrgDto.class);
         result.setScmId(org.getScm().getId());
-        result.setTokenId(org.getAccessToken().getId());
+
+        Long tokenId = Optional.ofNullable(org.getAccessToken())
+                .map(Token::getId)
+                .orElse(0L);
+        result.setTokenId(tokenId);
         return result;
+    }
+
+    private ScmOrg createOrg(long scmId, String orgIdentity) {
+        log.trace("createOrgIfDoesntExist: org not found, creating a new one.");
+
+        Scm scm = getScmOrThrow(scmId);
+
+        ScmOrg scmOrg = ScmOrg.builder()
+                .orgIdentity(orgIdentity)
+                .scm(scm)
+                .build();
+
+        return scmOrgRepository.saveAndFlush(scmOrg);
+    }
+
+    private Scm getScmOrThrow(long scmId) {
+        return scmRepository.findById(scmId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.INVALID_SCM_ID));
+    }
+
+    private Token getTokenOrThrow(long tokenId) {
+        return tokenRepository.findById(tokenId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.INVALID_TOKEN_ID));
+    }
+
+    public SCMOrgDto getOrgOrThrow(long scmId, String orgIdentity) {
+        return Optional.ofNullable(getOrg(scmId, orgIdentity))
+                .map(this::toWebDto)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(ErrorMessages.ORG_NOT_FOUND_BY_IDENTITY, orgIdentity, scmId)));
     }
 }

@@ -4,12 +4,7 @@ import com.checkmarx.integrations.datastore.models.ScmRepo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-
 public interface ScmRepoRepository extends JpaRepository<ScmRepo, Long> {
-
-    @Query(value = "SELECT r FROM ScmRepo r WHERE r.scmOrg.scm.id = ?1 AND r.scmOrg.orgIdentity = ?2")
-    List<ScmRepo> getScmReposByOrgIdentity(long scmId, String orgIdentity);
 
     @Query(value = "SELECT r FROM ScmRepo r WHERE r.scmOrg.scm.id = ?1 AND r.scmOrg.orgIdentity = ?2 AND r.repoIdentity = ?3")
     ScmRepo getRepo(long scmId, String orgIdentity, String repoIdentity);

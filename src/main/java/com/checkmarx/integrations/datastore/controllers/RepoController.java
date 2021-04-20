@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +25,10 @@ public class RepoController {
 
     @Operation(summary = "Gets organization repositories.")
     @GetMapping("scms/{scmId}/orgs/{orgIdentity}/repos")
-    public List<RepoDto> getScmReposByOrgIdentity(@PathVariable long scmId, @PathVariable String orgIdentity) {
-        log.trace("getScmReposByOrgIdentity: scmId={}, orgIdentity={}", scmId, orgIdentity);
-        List<RepoDto> repos = repoService.getScmReposByOrgIdentity(scmId, orgIdentity);
-        log.trace("getScmReposByOrgIdentity: repoDtoList:{}", repos);
+    public List<RepoDto> getOrganizationRepos(@PathVariable long scmId, @PathVariable String orgIdentity) {
+        log.trace("getOrganizationRepos: scmId={}, orgIdentity={}", scmId, orgIdentity);
+        List<RepoDto> repos = repoService.getOrganizationRepos(scmId, orgIdentity);
+        log.trace("getOrganizationRepos: repoDtoList:{}", repos);
 
         return repos;
     }
@@ -36,12 +37,12 @@ public class RepoController {
     @GetMapping(value = "scms/{scmId}/orgs/{orgIdentity}/repos/{repoIdentity}")
     @ApiResponse(responseCode = "200", description = "SCM repo found", content = @Content)
     @ApiResponse(responseCode = "404", description = "SCM repo was not found", content = @Content)
-    public ResponseEntity<RepoDto> getScmRepo(@PathVariable long scmId,
-                                              @PathVariable String orgIdentity,
-                                              @PathVariable String repoIdentity) {
-        log.trace("getScmRepo: scmId={}, orgIdentity={}, repoIdentity={}", scmId, orgIdentity, repoIdentity);
+    public ResponseEntity<RepoDto> getRepo(@PathVariable long scmId,
+                                           @PathVariable String orgIdentity,
+                                           @PathVariable String repoIdentity) {
+        log.trace("getRepo: scmId={}, orgIdentity={}, repoIdentity={}", scmId, orgIdentity, repoIdentity);
         RepoDto repoDto = repoService.getScmRepo(scmId, orgIdentity, repoIdentity);
-        log.trace("getScmRepo: repoDto:{}", repoDto);
+        log.trace("getRepo: repoDto:{}", repoDto);
 
         return ResponseEntity.ok(repoDto);
     }
@@ -54,7 +55,7 @@ public class RepoController {
         log.trace("importOrgAndRepos: updateRequest={}", updateRequest);
         storageService.importOrgAndRepos(updateRequest);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Updates an SCM repository.")

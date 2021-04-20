@@ -1,12 +1,16 @@
 package com.checkmarx.integrations.datastore.api.scan_details;
 
+import com.checkmarx.integrations.datastore.api.shared.ApiTestState;
+import com.checkmarx.integrations.datastore.api.shared.UrlFormatter;
 import com.checkmarx.integrations.datastore.models.ScanDetails;
 import com.checkmarx.integrations.datastore.repositories.ScanDetailsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.cucumber.spring.CucumberContextConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URI;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -27,16 +32,15 @@ import static org.junit.Assert.*;
 @Slf4j
 public class ScanDetailsSteps {
     private static final String MISSING_INDICATOR = "<missing>";
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @LocalServerPort
     private int port;
 
     private final ScanDetailsRepository repo;
-
     private final TestRestTemplate restTemplate;
-
-    private ResponseEntity<String> response;
+    private final ApiTestState testState;
+    private final UrlFormatter urlFormatter;
 
     @Given("database initially contains scan details with scan ID: {word} and body: {string}")
     public void databaseInitiallyContains(String scanId, String body) throws JsonProcessingException {
@@ -50,25 +54,20 @@ public class ScanDetailsSteps {
     public void clientCallsTheCreateScanDetailsAPI(String scanId, String body) throws JsonProcessingException {
         ObjectNode requestContents = getCreationRequestContents(scanId, body);
         HttpEntity<ObjectNode> request = new HttpEntity<>(requestContents);
-        String url = String.format("http://localhost:%d/scanDetails", port);
-        response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+        URI url = urlFormatter.format("scanDetails", port);
+        testState.setLastResponse(restTemplate.exchange(url, HttpMethod.POST, request, JsonNode.class));
     }
 
     @When("API client calls the `get scan details` API with scan ID: {word}")
     public void clientCallsTheGetScanDetailsAPI(String scanId) {
-        String url = String.format("http://localhost:%d/scanDetails/%s", port, scanId);
-        response = restTemplate.getForEntity(url, String.class);
-    }
-
-    @Then("response status is {int}")
-    public void responseStatusIs(int expectedStatus) {
-        assertEquals("Unexpected response status code.", expectedStatus, response.getStatusCodeValue());
+        URI url = urlFormatter.format("scanDetails/{scanId}", port, scanId);
+        testState.setLastResponse(restTemplate.getForEntity(url, JsonNode.class));
     }
 
     @Then("response content is {string}")
     public void responseContentIs(String expectedContent) {
-        assertNotNull("Response is null.", response);
-        assertEquals("Unexpected response content.", expectedContent, response.getBody());
+        JsonNode actualContent = testState.getResponseBodyOrThrow();
+        assertEquals("Unexpected response content.", expectedContent, actualContent.toString());
     }
 
     @Then("database contains scan details with scan ID: {word} and body: {string}")

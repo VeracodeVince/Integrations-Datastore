@@ -22,8 +22,5 @@ public class SCMOrgDto extends SCMOrgShortDto {
 
     private String cxFlowConfig;
 
-    @ToString.Exclude
-    private String cxGoToken;
-
     private String team;
 }

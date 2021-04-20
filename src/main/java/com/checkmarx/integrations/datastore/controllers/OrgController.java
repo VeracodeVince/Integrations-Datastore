@@ -75,6 +75,6 @@ public class OrgController {
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public void deleteOrganization(@PathVariable Long id) {
         log.trace("deleteOrganization: id={}", id);
-        orgService.deleteScmOrgById(id);
+        orgService.deleteOrg(id);
     }
 }

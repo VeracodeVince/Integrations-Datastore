@@ -1,17 +1,10 @@
 package com.checkmarx.integrations.datastore.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.checkmarx.integrations.datastore.utils.DBConsts.MAX_LENGTH;
 
 @Getter
 @Setter
@@ -33,7 +26,7 @@ public class ScmOrg {
 
     @OneToMany(mappedBy = "scmOrg", cascade = CascadeType.REMOVE)
     @JsonIgnore
-    private List<ScmRepo> scmRepoList = new ArrayList<>();
+    private List<ScmRepo> repos;
 
     @Column(name = "org_identity")
     private String orgIdentity;
@@ -41,11 +34,8 @@ public class ScmOrg {
     @Column(name = "cx_flow_url")
     private String cxFlowUrl;
 
-    @Column(name = "cx_flow_config")
+    @Column(name = "cx_flow_config", length = 10000)
     private String cxFlowConfig;
-
-    @Column(name = "cx_go_token", length = MAX_LENGTH)
-    private String cxGoToken;
 
     @ManyToOne
     @JoinColumn(name = "token_id")

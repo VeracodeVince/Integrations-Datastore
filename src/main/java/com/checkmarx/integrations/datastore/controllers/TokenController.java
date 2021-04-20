@@ -40,7 +40,7 @@ public class TokenController {
     public ResponseEntity<Void> updateTokenInfo(@PathVariable long id, @RequestBody AccessTokenShortDto tokenInfo) {
         log.trace("updateTokenInfo: id={}", id);
         tokenService.updateTokenInfo(tokenInfo, id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Creates an SCM access token.",
