@@ -128,7 +128,7 @@ jobs:
           #docker_layer_caching: true
       - run:
           name: Build Datastore Docker Image
-          command: docker build -t datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 .
+          command: docker build --build-arg COMMIT_SHA=${SHORT_GIT_SHA} --build-arg RELEASE_TAG=${CIRCLE_TAG} -t datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1 .
       - run:
           name: Save Datastore Docker Image to File
           command: docker save -o datastore-image.tar datastore:$CIRCLE_BRANCH-$CIRCLE_SHA1
