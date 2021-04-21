@@ -1,5 +1,11 @@
 FROM openjdk:11-jre-slim
 
+ARG COMMIT_SHA
+ARG RELEASE_TAG
+
+LABEL cx.commit-sha ${COMMIT_SHA}
+LABEL cx.release-tag ${RELEASE_TAG}
+
 WORKDIR app
 EXPOSE 8080
 RUN apt update && \
