@@ -116,7 +116,7 @@ public class OrgDbSteps {
 
         Tenant tenant = org.getTenant();
         if (tenantId.equals("<null>")) {
-            assertNull("Expected access tenant to be null.", tenant);
+            assertNull("Expected tenant to be null.", tenant);
         } else {
             assertNotNull("Tenant is null.", tenant);
             assertNotNull("Tenant ID is null.", tenant.getId());

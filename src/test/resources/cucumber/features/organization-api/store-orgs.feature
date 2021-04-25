@@ -9,6 +9,10 @@ Feature: APIs for working with SCM organizations
             | 1 |
             | 2 |
             | 3 |
+        And database contains tenants with IDs:
+            | 1 |
+            | 2 |
+            | 3 |
         And database contains the following organizations:
             | id | scmId | orgIdentity | cxFlowUrl            | cxFlowConfig   | tokenId | team         | tenantId |
             | 1  | 1     | myOrg1      | http://example.com/1 | initialConfig1 | 1       | initialTeam1 | 1        |
