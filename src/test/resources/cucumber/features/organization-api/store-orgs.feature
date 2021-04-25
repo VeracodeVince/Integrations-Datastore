@@ -49,9 +49,9 @@ Feature: APIs for working with SCM organizations
             | newOrg      | 1       |
         Then response status is 204
         And database contains, among others, organizations with the following fields:
-            | scmId | orgIdentity | team         | cxFlowUrl            | cxFlowConfig   | tokenId |
-            | 1     | myOrg1      | initialTeam1 | http://example.com/1 | initialConfig1 | 2       |
-            | 1     | newOrg      | <null>       | <null>               | <null>         | 1       |
+            | scmId | orgIdentity | team         | cxFlowUrl            | cxFlowConfig   | tokenId | tenantId |
+            | 1     | myOrg1      | initialTeam1 | http://example.com/1 | initialConfig1 | 2       | 1        |
+            | 1     | newOrg      | <null>       | <null>               | <null>         | 1       | <null>   |
 
     Scenario: Importing multiple organizations: invalid SCM
         When API client calls the `import organizations` API request with scmId: 111 and the following items:

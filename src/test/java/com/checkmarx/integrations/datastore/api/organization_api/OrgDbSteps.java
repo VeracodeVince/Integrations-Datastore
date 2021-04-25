@@ -120,7 +120,7 @@ public class OrgDbSteps {
         } else {
             assertNotNull("Tenant is null.", tenant);
             assertNotNull("Tenant ID is null.", tenant.getId());
-            SharedSteps.validateFieldValue("tenantId", tokenId, tenant.getId().toString());
+            SharedSteps.validateFieldValue("tenantId", tenantId, tenant.getId().toString());
         }
     }
 
