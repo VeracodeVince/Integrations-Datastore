@@ -91,7 +91,7 @@ public class OrgDbSteps {
     }
 
     @Then("database contains an organization with scmId: {int}, orgIdentity: {word}, team: {word}, " +
-            "cxFlowUrl: {word}, cxFlowConfig: {word}, tokenId: {word}")
+            "cxFlowUrl: {word}, cxFlowConfig: {word}, tokenId: {word}, tenantId: {word}")
     public void thenDatabaseContainsOrg(
             long scmId, String orgIdentity, String team, String cxFlowUrl, String cxFlowConfig,
             String tokenId, String tenantId) {
