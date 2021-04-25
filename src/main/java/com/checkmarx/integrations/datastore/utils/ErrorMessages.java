@@ -5,6 +5,7 @@ public class ErrorMessages {
     }
 
     public static final String ACCESS_TOKEN_NOT_FOUND = "Access token cannot be found with the combination of SCM ID: %d and org name: '%s'";
+    public static final String TENANT_NOT_FOUND = "Tenant cannot be found with the combination of SCM ID: %d and org name: '%s'";
     public static final String ACCESS_TOKEN_NOT_FOUND_BY_ID = "Access token with the %s ID was not found.";
     public static final String REPO_NOT_FOUND = "SCM repo '%s' was not found";
     public static final String ORG_NOT_FOUND_BY_IDENTITY = "The '%s' org for the SCM ID %d cannot be found.";

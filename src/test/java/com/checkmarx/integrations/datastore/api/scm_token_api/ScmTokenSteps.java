@@ -44,14 +44,8 @@ public class ScmTokenSteps {
     private final ScmRepository scmRepo;
     private final ScmOrgRepository orgRepo;
     private final ScmTokenRepository tokenRepo;
-    private final RepoInitializer repoInitializer;
     private final UrlFormatter urlFormatter;
     private final TestRestTemplate restTemplate;
-
-    @Given("database contains an SCM with ID 1")
-    public void dbContainsScm() {
-        repoInitializer.createEmptyScms(1);
-    }
 
     @Given("database contains {string} organization with scmId: {int} and token: {string}")
     public void dbContainsOrg(String orgIdentity, long scmId, String token) {

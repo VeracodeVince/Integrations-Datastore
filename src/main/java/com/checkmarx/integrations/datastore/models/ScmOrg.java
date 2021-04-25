@@ -42,5 +42,10 @@ public class ScmOrg {
     @JsonIgnore
     private Token accessToken;
 
+    @ManyToOne
+    @JoinColumn(name = "tenant_id")
+    @JsonIgnore
+    private Tenant tenant;
+
     private String team;
 }

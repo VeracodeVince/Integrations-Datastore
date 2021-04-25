@@ -39,6 +39,11 @@ public class SharedSteps {
         context.close();
     }
 
+    @Given("database contains an SCM with ID 1")
+    public void dbContainsScm() {
+        repoInitializer.createEmptyScms(1);
+    }
+
     @Then("response status is {int}")
     public void responseStatusIs(int expectedStatus) {
         ResponseEntity<JsonNode> response = testState.getLastResponse();
