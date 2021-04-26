@@ -15,4 +15,5 @@ import lombok.experimental.SuperBuilder;
 public class SCMOrgShortDto {
     private String orgIdentity;
     private long tokenId;
+    private long tenantId;
 }

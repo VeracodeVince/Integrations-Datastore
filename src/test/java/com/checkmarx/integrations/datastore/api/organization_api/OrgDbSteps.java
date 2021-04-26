@@ -4,10 +4,12 @@ import com.checkmarx.integrations.datastore.api.shared.ApiTestState;
 import com.checkmarx.integrations.datastore.api.shared.RepoInitializer;
 import com.checkmarx.integrations.datastore.api.shared.SharedSteps;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
+import com.checkmarx.integrations.datastore.models.Tenant;
 import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import com.checkmarx.integrations.datastore.repositories.ScmTokenRepository;
+import com.checkmarx.integrations.datastore.repositories.TenantRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -34,6 +36,7 @@ public class OrgDbSteps {
     private final ScmRepository scmRepo;
     private final ScmOrgRepository orgRepo;
     private final ScmTokenRepository tokenRepo;
+    private final TenantRepository tenantRepo;
     private final RepoInitializer repoInitializer;
     private final ModelMapper modelMapper;
 
@@ -49,6 +52,15 @@ public class OrgDbSteps {
                 .collect(Collectors.toList());
         tokenRepo.saveAll(tokens);
         tokenRepo.flush();
+    }
+
+    @Given("database contains tenants with IDs:")
+    public void databaseContainsTenants(List<Long> tenantIds) {
+        List<Tenant> tenants = tenantIds.stream()
+                .map(toDummyTenant())
+                .collect(Collectors.toList());
+        tenantRepo.saveAll(tenants);
+        tenantRepo.flush();
     }
 
     @Given("database contains the following organizations:")
@@ -75,12 +87,14 @@ public class OrgDbSteps {
 
         validateJsonField(Long.toString(orgInDB.getScm().getId()), orgFromResponse, "scmId");
         validateJsonField(orgInDB.getAccessToken().getId().toString(), orgFromResponse, "tokenId");
+        validateJsonField(orgInDB.getTenant().getId().toString(), orgFromResponse, "tenantId");
     }
 
     @Then("database contains an organization with scmId: {int}, orgIdentity: {word}, team: {word}, " +
-            "cxFlowUrl: {word}, cxFlowConfig: {word}, tokenId: {word}")
+            "cxFlowUrl: {word}, cxFlowConfig: {word}, tokenId: {word}, tenantId: {word}")
     public void thenDatabaseContainsOrg(
-            long scmId, String orgIdentity, String team, String cxFlowUrl, String cxFlowConfig, String tokenId) {
+            long scmId, String orgIdentity, String team, String cxFlowUrl, String cxFlowConfig,
+            String tokenId, String tenantId) {
         ScmOrg org = orgRepo.getScmOrg(scmId, orgIdentity);
 
         String message = String.format("Expected the DB to contain an organization with scmID: %d, orgIdentity: '%s'" +
@@ -99,6 +113,15 @@ public class OrgDbSteps {
             assertNotNull("Access token ID is null.", token.getId());
             SharedSteps.validateFieldValue("tokenId", tokenId, token.getId().toString());
         }
+
+        Tenant tenant = org.getTenant();
+        if (tenantId.equals("<null>")) {
+            assertNull("Expected tenant to be null.", tenant);
+        } else {
+            assertNotNull("Tenant is null.", tenant);
+            assertNotNull("Tenant ID is null.", tenant.getId());
+            SharedSteps.validateFieldValue("tenantId", tenantId, tenant.getId().toString());
+        }
     }
 
     @Then("database contains, among others, organizations with the following fields:")
@@ -110,7 +133,8 @@ public class OrgDbSteps {
                     expectedOrg.get("team"),
                     expectedOrg.get("cxFlowUrl"),
                     expectedOrg.get("cxFlowConfig"),
-                    expectedOrg.get("tokenId")
+                    expectedOrg.get("tokenId"),
+                    expectedOrg.get("tenantId")
             );
         }
     }
@@ -118,6 +142,12 @@ public class OrgDbSteps {
     private Function<Long, Token> toDummyToken() {
         return id -> Token.builder()
                 .accessToken(String.format("dummyToken%d", id))
+                .build();
+    }
+
+    private Function<Long, Tenant> toDummyTenant() {
+        return id -> Tenant.builder()
+                .tenantIdentity(String.format("dummyTenant%d", id))
                 .build();
     }
 
@@ -137,6 +167,10 @@ public class OrgDbSteps {
         long tokenId = Long.parseLong(org.get("tokenId"));
         target.setAccessToken(tokenRepo.findById(tokenId)
                 .orElse(null));
+
+        long tenantId = Long.parseLong(org.get("tenantId"));
+        target.setTenant(tenantRepo.findById(tenantId)
+                                      .orElse(null));
     }
 
     private static void validateJsonField(String expectedValue, JsonNode actualOrg, String fieldName) {

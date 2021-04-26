@@ -6,6 +6,7 @@ import com.checkmarx.integrations.datastore.dto.SCMOrgShortDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgUpdateDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
+import com.checkmarx.integrations.datastore.models.Tenant;
 import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
@@ -111,6 +112,12 @@ public class OrgService {
                 .map(Token::getId)
                 .orElse(0L);
         result.setTokenId(tokenId);
+
+        Long tenantId = Optional.ofNullable(org.getTenant())
+                .map(Tenant::getId)
+                .orElse(0L);
+        result.setTenantId(tenantId);
+
         return result;
     }
 

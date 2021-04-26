@@ -9,11 +9,15 @@ Feature: APIs for getting an SCM organization
             | 1 |
             | 2 |
             | 3 |
+        And database contains tenants with IDs:
+            | 1 |
+            | 2 |
+            | 3 |
         And database contains the following organizations:
-            | id | scmId | orgIdentity | cxFlowUrl            | cxFlowConfig   | tokenId | team         |
-            | 1  | 1     | myOrg1      | http://example.com/1 | initialConfig1 | 1       | initialTeam1 |
-            | 2  | 2     | myOrg1      | http://example.com/2 | initialConfig2 | 2       | initialTeam2 |
-            | 3  | 2     | myOrg2      | http://example.com/3 | initialConfig3 | 3       | initialTeam3 |
+            | id | scmId | orgIdentity | cxFlowUrl            | cxFlowConfig   | tokenId | team         | tenantId |
+            | 1  | 1     | myOrg1      | http://example.com/1 | initialConfig1 | 1       | initialTeam1 | 1        |
+            | 2  | 2     | myOrg1      | http://example.com/2 | initialConfig2 | 2       | initialTeam2 | 2        |
+            | 3  | 2     | myOrg2      | http://example.com/3 | initialConfig3 | 3       | initialTeam3 | 3        |
 
     Scenario Outline: Getting organization by identity and SCM
     Includes the case when organizations with the same identity exist in several SCMs.

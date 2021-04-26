@@ -4,6 +4,7 @@ import com.checkmarx.integrations.datastore.controllers.exceptions.EntityNotFoun
 import com.checkmarx.integrations.datastore.dto.AccessTokenDto;
 import com.checkmarx.integrations.datastore.dto.ReposUpdateDto;
 import com.checkmarx.integrations.datastore.dto.SCMCreateDto;
+import com.checkmarx.integrations.datastore.dto.TenantDto;
 import com.checkmarx.integrations.datastore.models.ScmOrg;
 import com.checkmarx.integrations.datastore.models.ScmType;
 import com.checkmarx.integrations.datastore.utils.ErrorMessages;
@@ -24,6 +25,7 @@ public class StorageService {
     private final RepoService repoService;
     private final OrgService orgService;
     private final TokenService tokenService;
+    private final TenantService tenantService;
     private final ScmService scmService;
     private final ScmTypeService scmTypeService;
 
@@ -38,7 +40,16 @@ public class StorageService {
         return Optional.ofNullable(org)
                 .map(ScmOrg::getAccessToken)
                 .map(tokenService::toTokenResponse)
-                .orElseThrow(notFoundException(scmId, orgIdentity));
+                .orElseThrow(tokenNotFoundException(scmId, orgIdentity));
+    }
+
+    public TenantDto getTenant(long scmId, String orgIdentity) {
+        ScmOrg org = orgService.getOrg(scmId, orgIdentity);
+
+        return Optional.ofNullable(org)
+                .map(ScmOrg::getTenant)
+                .map(tenantService::toTenantResponse)
+                .orElseThrow(tenantNotFoundException(scmId, orgIdentity));
     }
 
     public long createScm(SCMCreateDto scm) {
@@ -46,9 +57,16 @@ public class StorageService {
         return scmService.createScm(scm, scmType);
     }
 
-    private static Supplier<EntityNotFoundException> notFoundException(long scmId, String orgIdentity) {
+    private static Supplier<EntityNotFoundException> tokenNotFoundException(long scmId, String orgIdentity) {
         return () -> {
             String message = String.format(ErrorMessages.ACCESS_TOKEN_NOT_FOUND, scmId, orgIdentity);
+            return new EntityNotFoundException(message);
+        };
+    }
+
+    private static Supplier<EntityNotFoundException> tenantNotFoundException(long scmId, String orgIdentity) {
+        return () -> {
+            String message = String.format(ErrorMessages.TENANT_NOT_FOUND, scmId, orgIdentity);
             return new EntityNotFoundException(message);
         };
     }
