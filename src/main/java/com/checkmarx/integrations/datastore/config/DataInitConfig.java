@@ -2,9 +2,11 @@ package com.checkmarx.integrations.datastore.config;
 
 import com.checkmarx.integrations.datastore.dto.AccessTokenShortDto;
 import com.checkmarx.integrations.datastore.dto.SCMOrgShortDto;
+import com.checkmarx.integrations.datastore.dto.TenantShortDto;
 import com.checkmarx.integrations.datastore.models.Scm;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import com.checkmarx.integrations.datastore.services.OrgService;
+import com.checkmarx.integrations.datastore.services.TenantService;
 import com.checkmarx.integrations.datastore.services.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class DataInitConfig {
 
     private static final String GITHUB_DEFAULT_ORG = "GITHUB_DEFAULT_ORG";
     private static final String GITHUB_DEFAULT_TOKEN = "GITHUB_DEFAULT_TOKEN";
+    private static final String GITHUB_DEFAULT_TENANT = "organization";
     private static final String ACCESS_TOKEN = "access_token";
     private static final String REFRESH_TOKEN = "refresh_token";
 
@@ -52,6 +55,7 @@ public class DataInitConfig {
     private final Environment environment;
     private final ScmRepository scmRepository;
     private final TokenService tokenService;
+    private final TenantService tenantService;
     private final OrgService orgService;
 
     @PostConstruct
@@ -79,17 +83,23 @@ public class DataInitConfig {
 
         String tokenJson = getTokenJson(orgToken);
         long tokenId = createDefaultToken(tokenJson);
-        createDefaultOrg(orgIdentity, scm, tokenId);
+        //TODO extract github default tenant from env variable
+        long tenantId = createDefaultTenant(GITHUB_DEFAULT_TENANT);
+        createDefaultOrg(orgIdentity, scm, tokenId, tenantId);
     }
 
-    private void createDefaultOrg(String orgIdentity, Scm scm, long tokenId) {
-        orgService.createOrg(SCMOrgShortDto.builder().orgIdentity(orgIdentity).tokenId(tokenId).build(), scm
+    private void createDefaultOrg(String orgIdentity, Scm scm, long tokenId, long tenantId) {
+        orgService.createOrg(SCMOrgShortDto.builder().orgIdentity(orgIdentity).tokenId(tokenId).tenantId(tenantId).build(), scm
                 .getId());
     }
 
     private long createDefaultToken(String tokenJson) {
         return tokenService.createTokenInfoIfDoesntExist(
                 AccessTokenShortDto.builder().accessToken(tokenJson).build());
+    }
+
+    private long createDefaultTenant(String tenantIdentity) {
+        return tenantService.createTenantIfDoesntExist(TenantShortDto.builder().tenantIdentity(tenantIdentity).build());
     }
 
     private String getTokenJson(String orgToken) {
