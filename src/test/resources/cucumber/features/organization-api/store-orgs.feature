@@ -41,20 +41,20 @@ Feature: APIs for working with SCM organizations
         Then response status is 404
         And response has a non-empty "message" field
 
-    Scenario: Importing multiple organizations
+    Scenario: Updating or creating multiple organizations
     Checking for both an existing and new organization.
-        When API client calls the `import organizations` API request with scmId: 1 and the following items:
-            | orgIdentity | tokenId |
-            | myOrg1      | 2       |
-            | newOrg      | 1       |
+        When API client calls the `update or create organizations` API request with scmId: 1 and the following items:
+            | orgIdentity | tokenId | tenantId |
+            | myOrg1      | 2       | 1        |
+            | newOrg      | 1       | 2        |
         Then response status is 204
         And database contains, among others, organizations with the following fields:
             | scmId | orgIdentity | team         | cxFlowUrl            | cxFlowConfig   | tokenId | tenantId |
             | 1     | myOrg1      | initialTeam1 | http://example.com/1 | initialConfig1 | 2       | 1        |
-            | 1     | newOrg      | <null>       | <null>               | <null>         | 1       | <null>   |
+            | 1     | newOrg      | <null>       | <null>               | <null>         | 1       | 2        |
 
     Scenario: Importing multiple organizations: invalid SCM
-        When API client calls the `import organizations` API request with scmId: 111 and the following items:
+        When API client calls the `update or create organizations` API request with scmId: 111 and the following items:
             | orgIdentity | tokenId |
             | myOrg1      | 2       |
             | newOrg      | 1       |
@@ -62,7 +62,7 @@ Feature: APIs for working with SCM organizations
         And response has a non-empty "message" field
 
     Scenario: Importing multiple organizations: invalid token ID
-        When API client calls the `import organizations` API request with scmId: 1 and the following items:
+        When API client calls the `update or create organizations` API request with scmId: 1 and the following items:
             | orgIdentity | tokenId |
             | myOrg1      | 2       |
             | newOrg      | 1111    |

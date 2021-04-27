@@ -11,6 +11,7 @@ import com.checkmarx.integrations.datastore.models.Token;
 import com.checkmarx.integrations.datastore.repositories.ScmOrgRepository;
 import com.checkmarx.integrations.datastore.repositories.ScmRepository;
 import com.checkmarx.integrations.datastore.repositories.ScmTokenRepository;
+import com.checkmarx.integrations.datastore.repositories.TenantRepository;
 import com.checkmarx.integrations.datastore.utils.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class OrgService {
     private final ScmOrgRepository scmOrgRepository;
     private final ScmRepository scmRepository;
     private final ScmTokenRepository tokenRepository;
+    private final TenantRepository tenantRepository;
     private final ModelMapper modelMapper;
 
     public ScmOrg getOrg(long scmId, String orgIdentity) {
@@ -69,14 +71,14 @@ public class OrgService {
         }
     }
 
-    public void importOrgsIntoStorage(List<SCMOrgShortDto> orgs, long scmId) {
+    public void updateOrCreateOrgs(List<SCMOrgShortDto> orgs, long scmId) {
         int updatedCount = 0;
         int createdCount = 0;
         getScmOrThrow(scmId);
         for (SCMOrgShortDto org : orgs) {
             ScmOrg existingOrg = getOrg(scmId, org.getOrgIdentity());
             if (existingOrg != null) {
-                updateTokenId(existingOrg, org.getTokenId());
+                updateTokenAndTenant(existingOrg, org.getTokenId(), org.getTenantId());
                 updatedCount++;
             } else {
                 createOrg(org, scmId);
@@ -84,20 +86,24 @@ public class OrgService {
             }
         }
 
-        log.trace("importOrgsIntoStorage: orgs created: {}, updated: {}.", createdCount, updatedCount);
+        log.trace("updateOrCreateOrgs: orgs created: {}, updated: {}.", createdCount, updatedCount);
     }
 
-    private void updateTokenId(ScmOrg org, long newTokenId) {
+    private void updateTokenAndTenant(ScmOrg org, long newTokenId, long newTenantId) {
         Token token = getTokenOrThrow(newTokenId);
         org.setAccessToken(token);
+        Tenant tenant = getTenantOrThrow(newTenantId);
+        org.setTenant(tenant);
         scmOrgRepository.saveAndFlush(org);
     }
 
     public void createOrg(SCMOrgShortDto org, long scmId) {
         Token token = getTokenOrThrow(org.getTokenId());
+        Tenant tenant = getTenantOrThrow(org.getTenantId());
         Scm scm = getScmOrThrow(scmId);
         ScmOrg orgForStorage = ScmOrg.builder()
                 .accessToken(token)
+                .tenant(tenant)
                 .scm(scm)
                 .orgIdentity(org.getOrgIdentity())
                 .build();
@@ -142,6 +148,11 @@ public class OrgService {
     private Token getTokenOrThrow(long tokenId) {
         return tokenRepository.findById(tokenId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.INVALID_TOKEN_ID));
+    }
+
+    private Tenant getTenantOrThrow(long tenantId) {
+        return tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessages.INVALID_TENANT_ID));
     }
 
     public SCMOrgDto getOrgOrThrow(long scmId, String orgIdentity) {

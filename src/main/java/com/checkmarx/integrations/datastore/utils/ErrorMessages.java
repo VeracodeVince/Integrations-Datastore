@@ -13,6 +13,7 @@ public class ErrorMessages {
     public static final String SCM_NOT_FOUND = "SCM with ID %d cannot be found";
     public static final String INVALID_SCM_ID = "Invalid SCM ID.";
     public static final String INVALID_TOKEN_ID = "Invalid access token ID.";
+    public static final String INVALID_TENANT_ID = "Invalid tenant ID.";
     public static final String SCM_NOT_FOUND_BY_REPO_BASE_URL = "SCM with cannot be found for repo base URL: '%s'";
     public static final String INVALID_SCM_TYPE = "Invalid SCM type: '%s'.";
 }

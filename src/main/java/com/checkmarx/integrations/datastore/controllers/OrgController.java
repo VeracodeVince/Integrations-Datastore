@@ -22,14 +22,15 @@ import java.util.List;
 public class OrgController {
     private final OrgService orgService;
 
-    @Operation(summary = "Imports multiple organizations.",
+    @Operation(summary = "Update or create multiple organizations.",
             description = "For each of the organizations in request, if the organization doesn't exist, it is created; " +
-                    "if the organization exists, only its access token ID is updated.")
+                    "if the organization exists, its access token and tenant ID are updated.")
     @PutMapping(value = "scms/{scmId}/orgs")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void importOrganizations(@PathVariable long scmId, @RequestBody List<SCMOrgShortDto> orgs) {
-        log.trace("importOrganizations: SCM id: {}, organization count: {}", scmId, orgs.size());
-        orgService.importOrgsIntoStorage(orgs, scmId);
+    public void updateOrCreateOrganizations(@PathVariable long scmId,
+                                            @RequestBody List<SCMOrgShortDto> orgs) {
+        log.trace("updateOrCreateOrganizations: SCM id: {}, organization count: {}", scmId, orgs.size());
+        orgService.updateOrCreateOrgs(orgs, scmId);
     }
 
     @Operation(summary = "Gets an organization by its identity.")

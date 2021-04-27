@@ -58,8 +58,8 @@ public class OrgApiCallSteps {
         testState.setLastResponse(response);
     }
 
-    @When("API client calls the `import organizations` API request with scmId: {int} and the following items:")
-    public void clientCallsImportOrgsApi(long scmId, List<Map<String, String>> requestItems) {
+    @When("API client calls the `update or create organizations` API request with scmId: {int} and the following items:")
+    public void clientCallsUpdateOrCreateOrgsApi(long scmId, List<Map<String, String>> requestItems) {
         URI url = urlFormatter.format("scms/{scmId}/orgs", port, scmId);
         HttpEntity<List<Map<String, String>>> request = new HttpEntity<>(requestItems);
         ResponseEntity<JsonNode> response = restTemplate.exchange(url, HttpMethod.PUT, request, JsonNode.class);
