@@ -261,7 +261,7 @@
             <!-- In case of an error make sure your settings.xml contains correct server config. -->
             <groupId>com.checkmarx</groupId>
             <artifactId>cx-integrations-common</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.12</version>
         </dependency>
     </dependencies>
     <repositories>

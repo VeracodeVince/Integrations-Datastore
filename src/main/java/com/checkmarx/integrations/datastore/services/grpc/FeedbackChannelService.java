@@ -1,4 +1,4 @@
-package com.checkmarx.integrations.datastore.services;
+package com.checkmarx.integrations.datastore.services.grpc;
 
 import com.checkmarx.integrations.common.grpc.*;
 import com.checkmarx.integrations.datastore.repositories.CxProjectRepository;
