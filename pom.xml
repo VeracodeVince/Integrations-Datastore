@@ -32,7 +32,7 @@
         <sonar.organization>checkmarx-ltd</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <cucumber.version>6.9.0</cucumber.version>
-        <spring.boot.starter.version>2.4.5</spring.boot.starter.version>
+        <spring.boot.starter.version>2.7.18</spring.boot.starter.version>
         <grpc.version>1.35.0</grpc.version>
     </properties>
     <organization>
