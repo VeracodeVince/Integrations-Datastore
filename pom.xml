@@ -32,8 +32,8 @@
         <sonar.organization>checkmarx-ltd</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <cucumber.version>6.9.0</cucumber.version>
-        <spring.boot.starter.version>2.4.5</spring.boot.starter.version>
-        <grpc.version>1.35.0</grpc.version>
+        <spring.boot.starter.version>2.6.15</spring.boot.starter.version>
+        <grpc.version>1.43.1</grpc.version>
     </properties>
     <organization>
         <name>Checkmarx</name>
@@ -254,7 +254,7 @@
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
-            <version>2.11.0.RELEASE</version>
+            <version>2.14.0.RELEASE</version>
         </dependency>
         <!-- gRPC end -->
         <dependency>
